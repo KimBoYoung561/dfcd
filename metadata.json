@@ -1,0 +1,6 @@
+{
+  "name": "안양 자전거 지도",
+  "description": "안양시 자전거 전용 도로망, 실시간 기상청 날씨 및 안양 9경·대표 명소 안내 지도",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

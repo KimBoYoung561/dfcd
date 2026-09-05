@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/* App text font scaling (Normal: 100%, Large: 120%, X-Large: 145%) */
+:root[data-font-size="normal"],
+[data-font-size="normal"] {
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-5xl: 3rem;
+}
+
+/* 120% Font Size Scaling */
+:root[data-font-size="large"],
+[data-font-size="large"] {
+  --text-xs: 0.9rem; /* 0.75 * 1.2 */
+  --text-sm: 1.05rem; /* 0.875 * 1.2 */
+  --text-base: 1.2rem; /* 1.0 * 1.2 */
+  --text-lg: 1.35rem; /* 1.125 * 1.2 */
+  --text-xl: 1.5rem; /* 1.25 * 1.2 */
+  --text-2xl: 1.8rem; /* 1.5 * 1.2 */
+  --text-3xl: 2.25rem; /* 1.875 * 1.2 */
+  --text-5xl: 3.6rem; /* 3.0 * 1.2 */
+}
+
+[data-font-size="large"] .text-xs,
+[data-font-size="large"] [class~="text-xs"] { font-size: 0.9rem !important; }
+[data-font-size="large"] .text-sm,
+[data-font-size="large"] [class~="text-sm"] { font-size: 1.05rem !important; }
+[data-font-size="large"] .text-base,
+[data-font-size="large"] [class~="text-base"] { font-size: 1.2rem !important; }
+[data-font-size="large"] .text-lg,
+[data-font-size="large"] [class~="text-lg"] { font-size: 1.35rem !important; }
+[data-font-size="large"] .text-xl,
+[data-font-size="large"] [class~="text-xl"] { font-size: 1.5rem !important; }
+[data-font-size="large"] .text-2xl,
+[data-font-size="large"] [class~="text-2xl"] { font-size: 1.8rem !important; }
+[data-font-size="large"] .text-3xl,
+[data-font-size="large"] [class~="text-3xl"] { font-size: 2.25rem !important; }
+[data-font-size="large"] .text-5xl,
+[data-font-size="large"] [class~="text-5xl"] { font-size: 3.6rem !important; }
+
+[data-font-size="large"] [class*="text-[8px]"] { font-size: 9.6px !important; }
+[data-font-size="large"] [class*="text-[9px]"] { font-size: 10.8px !important; }
+[data-font-size="large"] [class*="text-[10px]"] { font-size: 12px !important; }
+[data-font-size="large"] [class*="text-[11px]"] { font-size: 13.2px !important; }
+[data-font-size="large"] [class*="text-[12px]"] { font-size: 14.4px !important; }
+[data-font-size="large"] [class*="text-[13px]"] { font-size: 15.6px !important; }
+
+/* 145% Font Size Scaling */
+:root[data-font-size="xlarge"],
+[data-font-size="xlarge"] {
+  --text-xs: 1.0875rem; /* 0.75 * 1.45 */
+  --text-sm: 1.26875rem; /* 0.875 * 1.45 */
+  --text-base: 1.45rem; /* 1.0 * 1.45 */
+  --text-lg: 1.63125rem; /* 1.125 * 1.45 */
+  --text-xl: 1.8125rem; /* 1.25 * 1.45 */
+  --text-2xl: 2.175rem; /* 1.5 * 1.45 */
+  --text-3xl: 2.71875rem; /* 1.875 * 1.45 */
+  --text-5xl: 4.35rem; /* 3.0 * 1.45 */
+}
+
+[data-font-size="xlarge"] .text-xs,
+[data-font-size="xlarge"] [class~="text-xs"] { font-size: 1.0875rem !important; }
+[data-font-size="xlarge"] .text-sm,
+[data-font-size="xlarge"] [class~="text-sm"] { font-size: 1.26875rem !important; }
+[data-font-size="xlarge"] .text-base,
+[data-font-size="xlarge"] [class~="text-base"] { font-size: 1.45rem !important; }
+[data-font-size="xlarge"] .text-lg,
+[data-font-size="xlarge"] [class~="text-lg"] { font-size: 1.63125rem !important; }
+[data-font-size="xlarge"] .text-xl,
+[data-font-size="xlarge"] [class~="text-xl"] { font-size: 1.8125rem !important; }
+[data-font-size="xlarge"] .text-2xl,
+[data-font-size="xlarge"] [class~="text-2xl"] { font-size: 2.175rem !important; }
+[data-font-size="xlarge"] .text-3xl,
+[data-font-size="xlarge"] [class~="text-3xl"] { font-size: 2.71875rem !important; }
+[data-font-size="xlarge"] .text-5xl,
+[data-font-size="xlarge"] [class~="text-5xl"] { font-size: 4.35rem !important; }
+
+[data-font-size="xlarge"] [class*="text-[8px]"] { font-size: 11.6px !important; }
+[data-font-size="xlarge"] [class*="text-[9px]"] { font-size: 13.05px !important; }
+[data-font-size="xlarge"] [class*="text-[10px]"] { font-size: 14.5px !important; }
+[data-font-size="xlarge"] [class*="text-[11px]"] { font-size: 15.95px !important; }
+[data-font-size="xlarge"] [class*="text-[12px]"] { font-size: 17.4px !important; }
+[data-font-size="xlarge"] [class*="text-[13px]"] { font-size: 18.85px !important; }
+
+/* Prevent Tailwind max-width resets from distorting Kakao map tiles & marker overlays */
+.kakao-map-container img,
+[id^="daum-maps-"] img,
+[id^="kakao-maps-"] img,
+div[style*="position: absolute"] > img {
+  max-width: none !important;
+  max-height: none !important;
+}
