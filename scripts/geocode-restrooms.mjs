@@ -56,7 +56,7 @@ async function updateGeneratedFacilityFile() {
   let updated = 0;
   let failed = [];
   for (const record of records) {
-    if (record.category !== 'restroom') continue;
+    if (record.category !== 'restroom' && record.category !== 'parking') continue;
     const candidate = record.roadAddress || record.address;
     if (!candidate) {
       failed.push(`${record.name}: 주소 없음`);
@@ -149,7 +149,7 @@ async function main() {
     }
 
     const isObjectEnd = /^\s*},?\s*$/.test(line);
-    if (isObjectEnd && current.category === 'restroom' && (forceGeocode || !current.hasLat || !current.hasLng)) {
+    if (isObjectEnd && (current.category === 'restroom' || current.category === 'parking') && (forceGeocode || !current.hasLat || !current.hasLng)) {
       const candidate = current.roadAddress || current.address;
       if (candidate) {
         try {
