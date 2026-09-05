@@ -23,6 +23,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.3733018273269,
+    "lng": 126.962775347371,
   },
   {
     "id": "fac-park-dongan-2",
@@ -59,6 +61,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.3825049511718,
+    "lng": 126.962104386539,
   },
   {
     "id": "fac-park-dongan-4",
@@ -221,6 +225,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 10
+    "lat": 37.4009074758954,
+    "lng": 126.978364545147,
   },
   {
     "id": "fac-park-dongan-13",
@@ -257,6 +263,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 40
+    "lat": 37.3819215537353,
+    "lng": 126.948757233361,
   },
   {
     "id": "fac-park-dongan-15",
@@ -365,6 +373,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 15
+    "lat": 37.3839351488686,
+    "lng": 126.960460526639,
   },
   {
     "id": "fac-park-dongan-21",
@@ -401,6 +411,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 15
+    "lat": 37.3913516568261,
+    "lng": 126.950431044036,
   },
   {
     "id": "fac-park-dongan-23",
@@ -419,6 +431,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 54
+    "lat": 37.390002179095,
+    "lng": 126.950178643649,
   },
   {
     "id": "fac-park-dongan-24",
@@ -455,6 +469,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 70
+    "lat": 37.390002179095,
+    "lng": 126.950178643649,
   },
   {
     "id": "fac-park-dongan-26",
@@ -473,6 +489,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 55
+    "lat": 37.3913516568261,
+    "lng": 126.950431044036,
   },
   {
     "id": "fac-park-dongan-27",
@@ -491,6 +509,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 35
+    "lat": 37.390002179095,
+    "lng": 126.950178643649,
   },
   {
     "id": "fac-park-dongan-28",
@@ -509,6 +529,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.390002179095,
+    "lng": 126.950178643649,
   },
   {
     "id": "fac-park-dongan-29",
@@ -527,6 +549,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 56
+    "lat": 37.390002179095,
+    "lng": 126.950178643649,
   },
   {
     "id": "fac-park-dongan-30",
@@ -545,6 +569,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.390002179095,
+    "lng": 126.950178643649,
   },
   {
     "id": "fac-park-dongan-31",
@@ -581,6 +607,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.391140916368,
+    "lng": 126.954021096467,
   },
   {
     "id": "fac-park-dongan-33",
@@ -599,6 +627,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 17
+    "lat": 37.3956022703844,
+    "lng": 126.962824740555,
   },
   {
     "id": "fac-park-dongan-34",
@@ -617,6 +647,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 127
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-35",
@@ -635,6 +667,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 12
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-36",
@@ -653,6 +687,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 12
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-37",
@@ -671,6 +707,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 8
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-38",
@@ -689,6 +727,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 26
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-39",
@@ -707,6 +747,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-40",
@@ -725,6 +767,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 33
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-41",
@@ -743,6 +787,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 16
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-42",
@@ -761,6 +807,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 28
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-43",
@@ -779,6 +827,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 56
+    "lat": 37.4022952706408,
+    "lng": 126.975792329692,
   },
   {
     "id": "fac-park-dongan-44",
@@ -797,6 +847,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 9
+    "lat": 37.4022774326489,
+    "lng": 126.960163678157,
   },
   {
     "id": "fac-park-dongan-45",
@@ -815,6 +867,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 20
+    "lat": 37.3919331303769,
+    "lng": 126.954812908919,
   },
   {
     "id": "fac-park-dongan-46",
@@ -833,6 +887,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 15
+    "lat": 37.3919331303769,
+    "lng": 126.954812908919,
   },
   {
     "id": "fac-park-dongan-47",
@@ -923,6 +979,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 9
+    "lat": 37.3991018498323,
+    "lng": 126.943514597177,
   },
   {
     "id": "fac-park-dongan-52",
@@ -941,6 +999,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 6
+    "lat": 37.397767655467,
+    "lng": 126.932739602014,
   },
   {
     "id": "fac-park-dongan-53",
@@ -1229,6 +1289,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.392511597204,
+    "lng": 126.951210951067,
   },
   {
     "id": "fac-park-dongan-69",
@@ -1247,6 +1309,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.392511597204,
+    "lng": 126.951210951067,
   },
   {
     "id": "fac-park-dongan-70",
@@ -1265,6 +1329,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.392511597204,
+    "lng": 126.951210951067,
   },
   {
     "id": "fac-park-dongan-71",
@@ -1283,6 +1349,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 17
+    "lat": 37.3958094706658,
+    "lng": 126.949171730196,
   },
   {
     "id": "fac-park-dongan-72",
@@ -1301,6 +1369,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 17
+    "lat": 37.3849816534821,
+    "lng": 126.954594409203,
   },
   {
     "id": "fac-park-dongan-73",
@@ -1319,6 +1389,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 55
+    "lat": 37.3849816534821,
+    "lng": 126.954594409203,
   },
   {
     "id": "fac-park-dongan-74",
@@ -1355,6 +1427,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 10
+    "lat": 37.3828844017211,
+    "lng": 126.959739109434,
   },
   {
     "id": "fac-park-dongan-76",
@@ -1409,6 +1483,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3922399715101,
+    "lng": 126.953072511535,
   },
   {
     "id": "fac-park-dongan-79",
@@ -1427,6 +1503,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3923133697778,
+    "lng": 126.956516194105,
   },
   {
     "id": "fac-park-dongan-80",
@@ -1445,6 +1523,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 60
+    "lat": 37.3923133697778,
+    "lng": 126.956516194105,
   },
   {
     "id": "fac-park-dongan-81",
@@ -1463,6 +1543,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 65
+    "lat": 37.3923133697778,
+    "lng": 126.956516194105,
   },
   {
     "id": "fac-park-dongan-82",
@@ -1481,6 +1563,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3942980869639,
+    "lng": 126.956858356687,
   },
   {
     "id": "fac-park-dongan-83",
@@ -1499,6 +1583,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 28
+    "lat": 37.3942980869639,
+    "lng": 126.956858356687,
   },
   {
     "id": "fac-park-dongan-84",
@@ -1517,6 +1603,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3942980869639,
+    "lng": 126.956858356687,
   },
   {
     "id": "fac-park-dongan-85",
@@ -1535,6 +1623,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.3942980869639,
+    "lng": 126.956858356687,
   },
   {
     "id": "fac-park-dongan-86",
@@ -1553,6 +1643,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 107
+    "lat": 37.3942980869639,
+    "lng": 126.956858356687,
   },
   {
     "id": "fac-park-dongan-87",
@@ -1571,6 +1663,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3938319325169,
+    "lng": 126.960300727742,
   },
   {
     "id": "fac-park-dongan-88",
@@ -1589,6 +1683,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3945828565513,
+    "lng": 126.962263976722,
   },
   {
     "id": "fac-park-dongan-89",
@@ -1607,6 +1703,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3957260861186,
+    "lng": 126.96316155783,
   },
   {
     "id": "fac-park-dongan-90",
@@ -1769,6 +1867,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 20
+    "lat": 37.3919331303769,
+    "lng": 126.954812908919,
   },
   {
     "id": "fac-park-dongan-99",
@@ -1787,6 +1887,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 32
+    "lat": 37.3919331303769,
+    "lng": 126.954812908919,
   },
   {
     "id": "fac-park-dongan-100",
@@ -1895,6 +1997,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 8
+    "lat": 37.3677884466174,
+    "lng": 126.961636518899,
   },
   {
     "id": "fac-park-dongan-106",
@@ -1931,6 +2035,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3733018273269,
+    "lng": 126.962775347371,
   },
   {
     "id": "fac-park-dongan-108",
@@ -1949,6 +2055,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 35
+    "lat": 37.3863584346003,
+    "lng": 126.945076564749,
   },
   {
     "id": "fac-park-dongan-109",
@@ -1967,6 +2075,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 14
+    "lat": 37.3881589586448,
+    "lng": 126.946671734114,
   },
   {
     "id": "fac-park-dongan-110",
@@ -1985,6 +2095,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.391504330576,
+    "lng": 126.951178177649,
   },
   {
     "id": "fac-park-dongan-111",
@@ -2039,6 +2151,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 8
+    "lat": 37.3917302814084,
+    "lng": 126.950251918741,
   },
   {
     "id": "fac-park-dongan-114",
@@ -2111,6 +2225,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 24
+    "lat": 37.3921616450068,
+    "lng": 126.949929451783,
   },
   {
     "id": "fac-park-dongan-118",
@@ -2129,6 +2245,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 64
+    "lat": 37.3921616450068,
+    "lng": 126.949929451783,
   },
   {
     "id": "fac-park-dongan-119",
@@ -2183,6 +2301,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 9
+    "lat": 37.3840860545803,
+    "lng": 126.959089655651,
   },
   {
     "id": "fac-park-dongan-122",
@@ -2237,6 +2357,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 8
+    "lat": 37.3913761098586,
+    "lng": 126.952943410719,
   },
   {
     "id": "fac-park-dongan-125",
@@ -2255,6 +2377,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 30
+    "lat": 37.3949102903955,
+    "lng": 126.963710917289,
   },
   {
     "id": "fac-park-dongan-126",
@@ -2273,6 +2397,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 30
+    "lat": 37.3949102903955,
+    "lng": 126.963710917289,
   },
   {
     "id": "fac-park-dongan-127",
@@ -2291,6 +2417,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 30
+    "lat": 37.3949102903955,
+    "lng": 126.963710917289,
   },
   {
     "id": "fac-park-dongan-128",
@@ -2309,6 +2437,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 150
+    "lat": 37.3949102903955,
+    "lng": 126.963710917289,
   },
   {
     "id": "fac-park-dongan-129",
@@ -2327,6 +2457,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 49
+    "lat": 37.4062913124045,
+    "lng": 126.948736574943,
   },
   {
     "id": "fac-park-dongan-130",
@@ -2345,6 +2477,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.4062913124045,
+    "lng": 126.948736574943,
   },
   {
     "id": "fac-park-dongan-131",
@@ -2363,6 +2497,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 224
+    "lat": 37.4062913124045,
+    "lng": 126.948736574943,
   },
   {
     "id": "fac-park-dongan-132",
@@ -2381,6 +2517,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 동안구청",
     "capacity": 7
+    "lat": 37.3919331303769,
+    "lng": 126.954812908919,
   },
   {
     "id": "fac-park-dongan-133",
@@ -2408,8 +2546,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양8동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 명학로 33번길",
-    "lat": 37.3842224077947,
-    "lng": 126.932118585538,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 10대)",
     "availableItems": [
       "총 10대 수용",
@@ -2420,6 +2556,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 10
+    "lat": 37.3787676597595,
+    "lng": 126.936762976578,
   },
   {
     "id": "fac-park-manan-2",
@@ -2429,8 +2567,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 명학역 동측광장",
     "roadAddress": "경기도 안양시 만안구 안양로 111번길 42",
-    "lat": 37.3844604191546,
-    "lng": 126.935592791667,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 164대)",
     "availableItems": [
       "총 164대 수용",
@@ -2441,6 +2577,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 164
+    "lat": 37.3844604191546,
+    "lng": 126.935592791667,
   },
   {
     "id": "fac-park-manan-3",
@@ -2450,8 +2588,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 만안보건소",
     "roadAddress": "경기도 안양시 만안구 문예로 48",
-    "lat": 37.38584021896604,
-    "lng": 126.93294933214003,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 10대)",
     "availableItems": [
       "총 10대 수용",
@@ -2462,6 +2598,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 10
+    "lat": 37.3858473342855,
+    "lng": 126.932944470333,
   },
   {
     "id": "fac-park-manan-4",
@@ -2471,8 +2609,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 만안구청",
     "roadAddress": "경기도 안양시 만안구 문예로 52",
-    "lat": 37.3867040506883,
-    "lng": 126.93251043635,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 14대)",
     "availableItems": [
       "총 14대 수용",
@@ -2483,6 +2619,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 14
+    "lat": 37.3861851678314,
+    "lng": 126.933333738077,
   },
   {
     "id": "fac-park-manan-5",
@@ -2492,8 +2630,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양6동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 만안로 109",
-    "lat": 37.3900565288283,
-    "lng": 126.930559487995,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2504,6 +2640,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.3900565288283,
+    "lng": 126.930559487995,
   },
   {
     "id": "fac-park-manan-6",
@@ -2513,8 +2651,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양7동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 안양천서로 167",
-    "lat": 37.3914477125588,
-    "lng": 126.933707720062,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 10대)",
     "availableItems": [
       "총 10대 수용",
@@ -2525,6 +2661,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 10
+    "lat": 37.3914477125588,
+    "lng": 126.933707720062,
   },
   {
     "id": "fac-park-manan-7",
@@ -2534,8 +2672,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양5동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 안양로 188번길",
-    "lat": 37.394283452412154,
-    "lng": 126.92088082624163,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2546,6 +2682,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.39640066462416,
+    "lng": 126.9154013139404,
   },
   {
     "id": "fac-park-manan-8",
@@ -2555,8 +2693,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 충훈교 하부 안양천변",
     "roadAddress": "경기도 안양시 만안구 충훈로 1",
-    "lat": 37.3961690598937,
-    "lng": 126.929034894824,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 20대)",
     "availableItems": [
       "총 20대 수용",
@@ -2567,6 +2703,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 20
+    "lat": 37.3961690598937,
+    "lng": 126.929034894824,
   },
   {
     "id": "fac-park-manan-9",
@@ -2576,8 +2714,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 삼덕공원",
     "roadAddress": "경기도 안양시 만안구 병목안로 40",
-    "lat": 37.3962542304242,
-    "lng": 126.91474872274,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2588,6 +2724,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.3962542304242,
+    "lng": 126.91474872274,
   },
   {
     "id": "fac-park-manan-10",
@@ -2597,8 +2735,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양3동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 양화로 47번길",
-    "lat": 37.39629745337103,
-    "lng": 126.91471253503555,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2609,6 +2745,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.3976398885482,
+    "lng": 126.911407986238,
   },
   {
     "id": "fac-park-manan-11",
@@ -2618,8 +2756,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양4동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 장내로 119",
-    "lat": 37.3965159274691,
-    "lng": 126.917860885182,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 14대)",
     "availableItems": [
       "총 14대 수용",
@@ -2630,6 +2766,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 14
+    "lat": 37.3970848064809,
+    "lng": 126.920861506044,
   },
   {
     "id": "fac-park-manan-12",
@@ -2639,8 +2777,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 안양중앙시장",
     "roadAddress": "경기도 안양시 만안구 중앙로 133",
-    "lat": 37.3982454939448,
-    "lng": 126.917294315061,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 14대)",
     "availableItems": [
       "총 14대 수용",
@@ -2651,6 +2787,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 14
+    "lat": 37.39640066462416,
+    "lng": 126.9154013139404,
   },
   {
     "id": "fac-park-manan-13",
@@ -2660,8 +2798,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 안양남부시장",
     "roadAddress": "경기도 안양시 만안구 장내로 139",
-    "lat": 37.398819130497074,
-    "lng": 126.92078344968743,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 6대)",
     "availableItems": [
       "총 6대 수용",
@@ -2672,6 +2808,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 6
+    "lat": 37.3979250251482,
+    "lng": 126.922931982472,
   },
   {
     "id": "fac-park-manan-14",
@@ -2681,8 +2819,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양1동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 안양로 314번길",
-    "lat": 37.399144992907,
-    "lng": 126.925867569633,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 14대)",
     "availableItems": [
       "총 14대 수용",
@@ -2693,6 +2829,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 14
+    "lat": 37.4004822091231,
+    "lng": 126.921148414922,
   },
   {
     "id": "fac-park-manan-15",
@@ -2702,8 +2840,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 안양역 1번출구",
     "roadAddress": "경기도 안양시 만안구 만안로 232",
-    "lat": 37.4012585200043,
-    "lng": 126.922635373854,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 182대)",
     "availableItems": [
       "총 182대 수용",
@@ -2714,6 +2850,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 182
+    "lat": 37.4014349994721,
+    "lng": 126.92300270344,
   },
   {
     "id": "fac-park-manan-16",
@@ -2723,8 +2861,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 박달2동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 박달로 497",
-    "lat": 37.40192112620644,
-    "lng": 126.90462043895845,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 23대)",
     "availableItems": [
       "총 23대 수용",
@@ -2735,6 +2871,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 23
+    "lat": 37.402746346215,
+    "lng": 126.907884695664,
   },
   {
     "id": "fac-park-manan-17",
@@ -2744,8 +2882,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 안양역 2·3번출구",
     "roadAddress": "경기도 안양시 만안구 만안로 232",
-    "lat": 37.40203367017861,
-    "lng": 126.92305246311903,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 100대)",
     "availableItems": [
       "총 100대 수용",
@@ -2756,6 +2892,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 100
+    "lat": 37.4014349994721,
+    "lng": 126.92300270344,
   },
   {
     "id": "fac-park-manan-18",
@@ -2765,8 +2903,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 박달동 박달소공원",
     "roadAddress": "경기도 안양시 만안구 박달로 527번길",
-    "lat": 37.4029595687628,
-    "lng": 126.912202154977,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 8대)",
     "availableItems": [
       "총 8대 수용",
@@ -2777,6 +2913,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 8
+    "lat": 37.4027490296443,
+    "lng": 126.911275926972,
   },
   {
     "id": "fac-park-manan-19",
@@ -2786,8 +2924,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 박달동 동민회관",
     "roadAddress": "경기도 안양시 만안구 박달로 441번길",
-    "lat": 37.40380248704808,
-    "lng": 126.89610201322597,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 10대)",
     "availableItems": [
       "총 10대 수용",
@@ -2798,6 +2934,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 10
+    "lat": 37.40380248704808,
+    "lng": 126.89610201322597,
   },
   {
     "id": "fac-park-manan-20",
@@ -2807,8 +2945,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 박달동 삼봉마을 1호 공원",
     "roadAddress": "경기도 안양시 만안구 삼봉로 15",
-    "lat": 37.4044835821924,
-    "lng": 126.909607704252,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 10대)",
     "availableItems": [
       "총 10대 수용",
@@ -2819,6 +2955,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 10
+    "lat": 37.4013622560649,
+    "lng": 126.905109504966,
   },
   {
     "id": "fac-park-manan-21",
@@ -2828,8 +2966,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양2동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 안양로 363",
-    "lat": 37.4050972296597,
-    "lng": 126.917828929148,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2840,6 +2976,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.4050972296597,
+    "lng": 126.917828929148,
   },
   {
     "id": "fac-park-manan-22",
@@ -2849,8 +2987,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양2동 행정복지센터 후문",
     "roadAddress": "경기도 안양시 만안구 안양로 363",
-    "lat": 37.4050972296597,
-    "lng": 126.917828929148,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2861,6 +2997,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.4050972296597,
+    "lng": 126.917828929148,
   },
   {
     "id": "fac-park-manan-23",
@@ -2870,8 +3008,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 안양동 대림대학교 앞",
     "roadAddress": "경기도 안양시 만안구 임곡로 29",
-    "lat": 37.40864513870647,
-    "lng": 126.92000728939291,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 282대)",
     "availableItems": [
       "총 282대 수용",
@@ -2882,6 +3018,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 282
+    "lat": 37.40864513870647,
+    "lng": 126.92000728939291,
   },
   {
     "id": "fac-park-manan-24",
@@ -2891,8 +3029,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 충훈동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 석수로 140",
-    "lat": 37.40919888696359,
-    "lng": 126.89944926354089,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2903,6 +3039,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.40919888696359,
+    "lng": 126.89944926354089,
   },
   {
     "id": "fac-park-manan-25",
@@ -2912,8 +3050,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 안양중학교 앞",
     "roadAddress": "경기도 안양시 만안구 석수로 120",
-    "lat": 37.4092471178892,
-    "lng": 126.896864834132,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 40대)",
     "availableItems": [
       "총 40대 수용",
@@ -2924,6 +3060,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 40
+    "lat": 37.4049898095837,
+    "lng": 126.900237947409,
   },
   {
     "id": "fac-park-manan-26",
@@ -2933,8 +3071,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 충훈공원 앞",
     "roadAddress": "경기도 안양시 만안구 충훈로 72번길",
-    "lat": 37.410239850504965,
-    "lng": 126.90193513046522,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 7대)",
     "availableItems": [
       "총 7대 수용",
@@ -2945,6 +3081,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 7
+    "lat": 37.4083639502873,
+    "lng": 126.900345860418,
   },
   {
     "id": "fac-park-manan-27",
@@ -2954,8 +3092,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 충훈고등학교 앞",
     "roadAddress": "경기도 안양시 만안구 충훈로 90",
-    "lat": 37.411551465062686,
-    "lng": 126.90269926560087,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 35대)",
     "availableItems": [
       "총 35대 수용",
@@ -2966,6 +3102,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 35
+    "lat": 37.39640066462416,
+    "lng": 126.9154013139404,
   },
   {
     "id": "fac-park-manan-28",
@@ -2975,8 +3113,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 관악역 1번출구",
     "roadAddress": "경기도 안양시 만안구 경수대로 1273",
-    "lat": 37.41850326323771,
-    "lng": 126.90890345300669,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 29대)",
     "availableItems": [
       "총 29대 수용",
@@ -2987,6 +3123,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 29
+    "lat": 37.4205542223114,
+    "lng": 126.908400172605,
   },
   {
     "id": "fac-park-manan-29",
@@ -2996,8 +3134,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 안양예술공원 안내센터 앞",
     "roadAddress": "경기도 안양시 만안구 예술공원로 131",
-    "lat": 37.41888066214044,
-    "lng": 126.91992862331382,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 48대)",
     "availableItems": [
       "총 48대 수용",
@@ -3008,6 +3144,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 48
+    "lat": 37.4190651731135,
+    "lng": 126.919769820111,
   },
   {
     "id": "fac-park-manan-30",
@@ -3017,8 +3155,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 관악역 2번출구 광장",
     "roadAddress": "경기도 안양시 만안구 경수대로 1273",
-    "lat": 37.418994020811176,
-    "lng": 126.90969024315683,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 167대)",
     "availableItems": [
       "총 167대 수용",
@@ -3029,6 +3165,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 167
+    "lat": 37.4205542223114,
+    "lng": 126.908400172605,
   },
   {
     "id": "fac-park-manan-31",
@@ -3038,8 +3176,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 삼성초등학교 앞",
     "roadAddress": "경기도 안양시 만안구 안양로 492",
-    "lat": 37.4252684332075,
-    "lng": 126.902536906964,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 51대)",
     "availableItems": [
       "총 51대 수용",
@@ -3050,6 +3186,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 51
+    "lat": 37.4134554306005,
+    "lng": 126.90953490941,
   },
   {
     "id": "fac-park-manan-32",
@@ -3059,8 +3197,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 두산위브 e-편한세상 상가",
     "roadAddress": "경기도 안양시 만안구 안양로 498번길",
-    "lat": 37.4318435854398,
-    "lng": 126.904168953345,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 20대)",
     "availableItems": [
       "총 20대 수용",
@@ -3071,6 +3207,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 20
+    "lat": 37.4141063951404,
+    "lng": 126.909506564199,
   },
   {
     "id": "fac-park-manan-33",
@@ -3080,8 +3218,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수2동 행정복지센터 임시청사",
     "roadAddress": "경기도 안양시 만안구 안양로 501",
-    "lat": 37.4336663059758,
-    "lng": 126.913838096581,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 12대)",
     "availableItems": [
       "총 12대 수용",
@@ -3092,6 +3228,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 12
+    "lat": 37.4138372197715,
+    "lng": 126.908284096948,
   },
   {
     "id": "fac-park-manan-34",
@@ -3101,8 +3239,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 석수역 2번출구",
     "roadAddress": "경기도 안양시 만안구 안양로 501",
-    "lat": 37.43428371294846,
-    "lng": 126.90218398674432,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 192대)",
     "availableItems": [
       "총 192대 수용",
@@ -3113,6 +3249,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 192
+    "lat": 37.4138372197715,
+    "lng": 126.908284096948,
   },
   {
     "id": "fac-park-manan-35",
@@ -3122,8 +3260,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 석수역 2번출구 환승구역",
     "roadAddress": "경기도 안양시 만안구 안양로 501",
-    "lat": 37.43428371294846,
-    "lng": 126.90218398674432,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 48대)",
     "availableItems": [
       "총 48대 수용",
@@ -3134,6 +3270,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 48
+    "lat": 37.4138372197715,
+    "lng": 126.908284096948,
   },
   {
     "id": "fac-park-manan-36",
@@ -3143,8 +3281,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 석수역 2번출구 자전거도로",
     "roadAddress": "경기도 안양시 만안구 안양로 501",
-    "lat": 37.43428371294846,
-    "lng": 126.90218398674432,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 14대)",
     "availableItems": [
       "총 14대 수용",
@@ -3155,6 +3291,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 14
+    "lat": 37.4138372197715,
+    "lng": 126.908284096948,
   },
   {
     "id": "fac-park-manan-37",
@@ -3164,8 +3302,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 석수역 1번출구 환승",
     "roadAddress": "경기도 안양시 만안구 경수대로 1431",
-    "lat": 37.43435626958882,
-    "lng": 126.90276014509178,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 25대)",
     "availableItems": [
       "총 25대 수용",
@@ -3176,6 +3312,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 25
+    "lat": 37.4343424740399,
+    "lng": 126.902529209911,
   },
   {
     "id": "fac-park-manan-38",
@@ -3185,8 +3323,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 석수역 1번출구 광장",
     "roadAddress": "경기도 안양시 만안구 경수대로 1431",
-    "lat": 37.43435626958882,
-    "lng": 126.90276014509178,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 21대)",
     "availableItems": [
       "총 21대 수용",
@@ -3197,6 +3333,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 21
+    "lat": 37.4343424740399,
+    "lng": 126.902529209911,
   },
   {
     "id": "fac-park-manan-39",
@@ -3206,8 +3344,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수동 석수역 1번출구 뒤편",
     "roadAddress": "경기도 안양시 만안구 경수대로 1431",
-    "lat": 37.43435626958882,
-    "lng": 126.90276014509178,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 30대)",
     "availableItems": [
       "총 30대 수용",
@@ -3218,6 +3354,8 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 30
+    "lat": 37.4343424740399,
+    "lng": 126.902529209911,
   },
   {
     "id": "fac-park-manan-40",
@@ -3227,8 +3365,6 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "facilityType": "자전거보관소",
     "address": "경기도 안양시 만안구 석수1동 행정복지센터",
     "roadAddress": "경기도 안양시 만안구 안양로 524",
-    "lat": 37.4358749414527,
-    "lng": 126.913434439468,
     "description": "안양시 만안구 소재 자전거 보관대 (수용 인원: 14대)",
     "availableItems": [
       "총 14대 수용",
@@ -3239,5 +3375,7 @@ export const ANYANG_BIKE_RACKS: Facility[] = [
     "openHours": "24시간 상시 개방",
     "managementAgency": "안양시 만안구청",
     "capacity": 14
+    "lat": 37.4358749414527,
+    "lng": 126.913434439468,
   }
 ];
