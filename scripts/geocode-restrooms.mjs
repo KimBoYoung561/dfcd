@@ -14,41 +14,85 @@ if (!apiKey) {
   console.error('KAKAO_REST_API_KEY 환경변수를 설정하세요.');
   process.exit(1);
 }
-if (!/^[\x21-\x7E]+$/.test(apiKey)) {
-  console.error('KAKAO_REST_API_KEY에는 카카오 REST API 키만 입력하세요.');
-  process.exit(1);
-}
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function geocode(query) {
-  if (!query) return null;
-  // 주소 끝 건물명/부속 명칭 정제 (예: "관악대로 215 1층" -> "관악대로 215")
-  const cleanQuery = query.replace(/\s+(1층|2층|상가|앞|뒤|입구|정문|후문).*$/, '').trim();
-  
-  // 1. 카카오 주소 API 우선 검색
-  let url = `https://dapi.kakao.com/v2/local/search/address.json?query=${encodeURIComponent(cleanQuery)}`;
+// 카카오 API 호출 공통 함수
+async function fetchKakao(type, query) {
+  if (!query || query.trim().length < 2) return null;
+  const endpoint = type === 'address' ? 'address.json' : 'keyword.json';
+  const url = `https://dapi.kakao.com/v2/local/search/${endpoint}?size=1&query=${encodeURIComponent(query.trim())}`;
   try {
-    let res = await fetch(url, { headers: { Authorization: `KakaoAK ${apiKey}` } });
-    if (res.ok) {
-      let data = await res.json();
-      if (data.documents?.[0]) {
-        return { lat: Number(data.documents[0].y), lng: Number(data.documents[0].x) };
-      }
-    }
-  } catch {}
+    const res = await fetch(url, { headers: { Authorization: `KakaoAK ${apiKey}` } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const doc = data.documents?.[0];
+    if (!doc) return null;
+    const lat = Number(doc.y);
+    const lng = Number(doc.x);
+    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
+  } catch {
+    return null;
+  }
+}
 
-  // 2. 검색 실패 시 카카오 키워드 API로 우회 검색
-  url = `https://dapi.kakao.com/v2/local/search/keyword.json?size=1&query=${encodeURIComponent(cleanQuery)}`;
-  try {
-    let res = await fetch(url, { headers: { Authorization: `KakaoAK ${apiKey}` } });
-    if (res.ok) {
-      let data = await res.json();
-      if (data.documents?.[0]) {
-        return { lat: Number(data.documents[0].y), lng: Number(data.documents[0].x) };
-      }
-    }
-  } catch {}
+// 주소 정제 (잘못된 도로명 '광장' 제거, ~번길 공백 오타 수정, 수식어 제거)
+function cleanAddress(addr) {
+  if (!addr) return '';
+  return addr
+    .replace(/시민대로 광장/g, '시민대로')
+    .replace(/(\d+)번길\s+(\d+)/g, '$1번길 $2') // 번길 띄어쓰기 정제
+    .replace(/(\d+)번길$/g, '$1번길')
+    .replace(/\s+(1층|2층|상가|앞|뒤|입구|정문|후문|옆|부근|일원|광장|동측|서측).*$/g, '')
+    .trim();
+}
+
+// 장소명 정제 (키워드 검색용)
+function cleanName(name) {
+  if (!name) return '';
+  return name
+    .replace(/(자전거|거치대|보관소|대형|환승|스마트|주차타워|-1|-2|입구|정문|후문|앞|뒤|옆|동측|서측)/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function resolveCoordinates(name, address, roadAddress) {
+  const cleanedRoad = cleanAddress(roadAddress);
+  const cleanedAddr = cleanAddress(address);
+  const pureName = cleanName(name);
+
+  // 1. 도로명주소 검색
+  let coord = await fetchKakao('address', cleanedRoad);
+  if (coord) return coord;
+
+  // 2. 지번주소 검색
+  coord = await fetchKakao('address', cleanedAddr);
+  if (coord) return coord;
+
+  // 3. 키워드 검색 (도로명 + 장소명)
+  if (cleanedRoad && pureName) {
+    coord = await fetchKakao('keyword', `${cleanedRoad} ${pureName}`);
+    if (coord) return coord;
+  }
+
+  // 4. 키워드 검색 (지번 + 장소명)
+  if (cleanedAddr && pureName) {
+    coord = await fetchKakao('keyword', `${cleanedAddr} ${pureName}`);
+    if (coord) return coord;
+  }
+
+  // 5. 키워드 검색 ("안양시" + 장소명) - 예: "안양시 귀인동 먹자골목"
+  if (pureName) {
+    coord = await fetchKakao('keyword', `안양 ${pureName}`);
+    if (coord) return coord;
+  }
+
+  // 6. 구/동 단위 + 장소명 검색
+  const regionMatch = (roadAddress || address || '').match(/(동안구|만안구|[가-힣]+동)/);
+  if (regionMatch && pureName) {
+    coord = await fetchKakao('keyword', `안양 ${regionMatch[0]} ${pureName}`);
+    if (coord) return coord;
+  }
 
   return null;
 }
@@ -60,24 +104,19 @@ async function main() {
   }
 
   const source = fs.readFileSync(targetFile, 'utf8');
-
-  // 객체 블록 단위({ ... })로 안전하게 캡처하는 정규식
   const objectBlockRegex = /\{[\s\S]*?\}/g;
   let updated = 0;
   let skipped = 0;
   let failed = [];
 
-  // 각 객체 블록을 치환해가며 처리
   let newSource = await replaceAsync(source, objectBlockRegex, async (block) => {
-    // category 확인
     const categoryMatch = block.match(/["']category["']\s*:\s*["']([^"']+)["']/);
     const category = categoryMatch ? categoryMatch[1] : '';
 
     if (category !== 'restroom' && category !== 'parking') {
-      return block; // 대상 카테고리가 아니면 통과
+      return block;
     }
 
-    // 이미 좌표가 있고 FORCE_GEOCODE가 false면 스킵
     const hasLat = /["']lat["']\s*:/.test(block);
     const hasLng = /["']lng["']\s*:/.test(block);
 
@@ -86,7 +125,6 @@ async function main() {
       return block;
     }
 
-    // 이름 및 주소 추출
     const nameMatch = block.match(/["']name["']\s*:\s*["']([^"']+)["']/);
     const roadMatch = block.match(/["']roadAddress["']\s*:\s*["']([^"']+)["']/);
     const addrMatch = block.match(/["']address["']\s*:\s*["']([^"']+)["']/);
@@ -95,34 +133,26 @@ async function main() {
     const roadAddress = roadMatch ? roadMatch[1] : '';
     const address = addrMatch ? addrMatch[1] : '';
 
-    const queryCandidate = roadAddress || address;
-
-    if (!queryCandidate) {
-      failed.push(`${name}: 주소 정보 없음`);
-      return block;
-    }
-
-    // 좌표 검색 (도로명 -> 지번 -> 장소명 순으로 시도)
-    let coord = await geocode(roadAddress) 
-      || await geocode(address)
-      || await geocode(`안양 ${name.replace(/(자전거|거치대|보관소)/g, '').trim()}`);
-
+    const coord = await resolveCoordinates(name, address, roadAddress);
     await sleep(100);
 
     if (coord) {
       updated++;
-      // 기존 lat, lng 필드가 존재한다면 제거 후 새 lat, lng 주입
       let cleanBlock = block
         .replace(/\s*["']?lat["']?\s*:\s*-?\d+(\.\d+)?,?/g, '')
         .replace(/\s*["']?lng["']?\s*:\s*-?\d+(\.\d+)?,?/g, '');
 
-      // "roadAddress": "..." 바로 다음에 lat, lng 추가
       const insertTarget = cleanBlock.includes('"roadAddress"') ? '"roadAddress"' : '"address"';
-      const replacement = `${insertTarget}:${cleanBlock.match(new RegExp(`${insertTarget}\\s*:\\s*["']([^"']+)["']`))[0].split(':')[1]},\n    "lat": ${coord.lat},\n    "lng": ${coord.lng}`;
+      const targetRegex = new RegExp(`("${insertTarget}"|'${insertTarget}')\\s*:\\s*["']([^"']+)["']`);
+      const match = cleanBlock.match(targetRegex);
 
-      return cleanBlock.replace(new RegExp(`${insertTarget}\\s*:\\s*["']([^"']+)["']`), replacement);
+      if (match) {
+        const replacement = `${match[0]},\n    "lat": ${coord.lat},\n    "lng": ${coord.lng}`;
+        return cleanBlock.replace(match[0], replacement);
+      }
+      return cleanBlock;
     } else {
-      failed.push(`${name}: ${queryCandidate}`);
+      failed.push(`${name}: [도로명] ${roadAddress} / [지번] ${address}`);
       return block;
     }
   });
@@ -132,7 +162,6 @@ async function main() {
   if (failed.length) failed.forEach((item) => console.warn(`- 실패: ${item}`));
 }
 
-// async replace 지원 함수
 async function replaceAsync(str, regex, asyncFn) {
   const matches = [];
   str.replace(regex, (match, ...args) => {
