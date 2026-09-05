@@ -17,84 +17,76 @@ if (!apiKey) {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-// 카카오 API 호출 공통 함수
+// 카카오 API 호출 함수 (에러 상태 원인 파악 가능)
 async function fetchKakao(type, query) {
-  if (!query || query.trim().length < 2) return null;
+  if (!query || query.trim().length < 2) return { coord: null, error: '쿼리 미입력' };
+  
   const endpoint = type === 'address' ? 'address.json' : 'keyword.json';
   const url = `https://dapi.kakao.com/v2/local/search/${endpoint}?size=1&query=${encodeURIComponent(query.trim())}`;
+  
   try {
     const res = await fetch(url, { headers: { Authorization: `KakaoAK ${apiKey}` } });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      return { coord: null, error: `HTTP ${res.status}` };
+    }
     const data = await res.json();
     const doc = data.documents?.[0];
-    if (!doc) return null;
+    if (!doc) return { coord: null, error: '검색결과 0건' };
+    
     const lat = Number(doc.y);
     const lng = Number(doc.x);
-    return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
-  } catch {
-    return null;
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      return { coord: { lat, lng }, error: null };
+    }
+    return { coord: null, error: '좌표 데이터 이상' };
+  } catch (err) {
+    return { coord: null, error: err.message };
   }
 }
 
-// 주소 정제 (잘못된 도로명 '광장' 제거, ~번길 공백 오타 수정, 수식어 제거)
-function cleanAddress(addr) {
-  if (!addr) return '';
-  return addr
+// 안전한 주소 정제 (수식어만 제거)
+function sanitize(str) {
+  if (!str) return '';
+  return str
     .replace(/시민대로 광장/g, '시민대로')
-    .replace(/(\d+)번길\s+(\d+)/g, '$1번길 $2') // 번길 띄어쓰기 정제
-    .replace(/(\d+)번길$/g, '$1번길')
-    .replace(/\s+(1층|2층|상가|앞|뒤|입구|정문|후문|옆|부근|일원|광장|동측|서측).*$/g, '')
-    .trim();
-}
-
-// 장소명 정제 (키워드 검색용)
-function cleanName(name) {
-  if (!name) return '';
-  return name
-    .replace(/(자전거|거치대|보관소|대형|환승|스마트|주차타워|-1|-2|입구|정문|후문|앞|뒤|옆|동측|서측)/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replace(/\s+(1층|2층|상가|입구|정문|후문|앞|뒤|옆|부근|일원|광장|동측|서측).*$/g, '')
     .trim();
 }
 
 async function resolveCoordinates(name, address, roadAddress) {
-  const cleanedRoad = cleanAddress(roadAddress);
-  const cleanedAddr = cleanAddress(address);
-  const pureName = cleanName(name);
+  let lastError = '검색 실패';
 
-  // 1. 도로명주소 검색
-  let coord = await fetchKakao('address', cleanedRoad);
-  if (coord) return coord;
-
-  // 2. 지번주소 검색
-  coord = await fetchKakao('address', cleanedAddr);
-  if (coord) return coord;
-
-  // 3. 키워드 검색 (도로명 + 장소명)
-  if (cleanedRoad && pureName) {
-    coord = await fetchKakao('keyword', `${cleanedRoad} ${pureName}`);
-    if (coord) return coord;
+  // 1. 순수 도로명 주소 검색 (최우선)
+  if (roadAddress) {
+    let { coord, error } = await fetchKakao('address', roadAddress);
+    if (coord) return { coord, error: null };
+    lastError = error;
   }
 
-  // 4. 키워드 검색 (지번 + 장소명)
-  if (cleanedAddr && pureName) {
-    coord = await fetchKakao('keyword', `${cleanedAddr} ${pureName}`);
-    if (coord) return coord;
+  // 2. 순수 지번 주소 검색
+  if (address) {
+    let { coord, error } = await fetchKakao('address', address);
+    if (coord) return { coord, error: null };
+    lastError = error;
   }
 
-  // 5. 키워드 검색 ("안양시" + 장소명) - 예: "안양시 귀인동 먹자골목"
-  if (pureName) {
-    coord = await fetchKakao('keyword', `안양 ${pureName}`);
-    if (coord) return coord;
+  // 3. 정제된 도로명 주소 검색
+  const cleanRoad = sanitize(roadAddress);
+  if (cleanRoad && cleanRoad !== roadAddress) {
+    let { coord, error } = await fetchKakao('address', cleanRoad);
+    if (coord) return { coord, error: null };
+    lastError = error;
   }
 
-  // 6. 구/동 단위 + 장소명 검색
-  const regionMatch = (roadAddress || address || '').match(/(동안구|만안구|[가-힣]+동)/);
-  if (regionMatch && pureName) {
-    coord = await fetchKakao('keyword', `안양 ${regionMatch[0]} ${pureName}`);
-    if (coord) return coord;
+  // 4. 장소명 키워드 검색 ("안양 + 장소명")
+  const cleanName = name.replace(/(자전거|거치대|보관소|대형|환승|스마트|주차타워|-1|-2)/g, '').trim();
+  if (cleanName) {
+    let { coord, error } = await fetchKakao('keyword', `안양 ${cleanName}`);
+    if (coord) return { coord, error: null };
+    lastError = error;
   }
 
-  return null;
+  return { coord: null, error: lastError };
 }
 
 async function main() {
@@ -133,8 +125,10 @@ async function main() {
     const roadAddress = roadMatch ? roadMatch[1] : '';
     const address = addrMatch ? addrMatch[1] : '';
 
-    const coord = await resolveCoordinates(name, address, roadAddress);
-    await sleep(100);
+    // API 과호출 방지를 위해 200ms 대기 (초당 5회 제한)
+    await sleep(200);
+
+    const { coord, error } = await resolveCoordinates(name, address, roadAddress);
 
     if (coord) {
       updated++;
@@ -152,7 +146,7 @@ async function main() {
       }
       return cleanBlock;
     } else {
-      failed.push(`${name}: [도로명] ${roadAddress} / [지번] ${address}`);
+      failed.push(`${name} -> [원인: ${error}] ([도로명] ${roadAddress} / [지번] ${address})`);
       return block;
     }
   });
