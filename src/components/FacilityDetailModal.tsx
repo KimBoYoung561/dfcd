@@ -26,6 +26,7 @@ export default function FacilityDetailModal({
               {facility.category === 'water' && '💧'}
               {facility.category === 'repair' && '🔧'}
               {facility.category === 'parking' && '🚲'}
+              {facility.category === 'toilet' && '🚻'}
             </div>
             <div>
               <div className="flex items-center gap-1.5 flex-wrap">
@@ -52,6 +53,55 @@ export default function FacilityDetailModal({
             <X size={16} />
           </button>
         </div>
+
+        {/* Toilet Safety & Amenity Status Grid */}
+        {facility.category === 'toilet' && (
+          <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+            <div className={`flex items-center gap-2 rounded-2xl p-2.5 border ${
+              facility.emergencyBell
+                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                : 'bg-slate-50 border-slate-200 text-slate-500'
+            }`}>
+              <span className="text-base">🚨</span>
+              <div className="min-w-0">
+                <p className="font-bold text-[11px]">안심 비상벨</p>
+                <p className="text-[10px] truncate">{facility.emergencyBell ? (facility.emergencyBellLocation || '설치됨') : '미설치'}</p>
+              </div>
+            </div>
+
+            <div className={`flex items-center gap-2 rounded-2xl p-2.5 border ${
+              facility.cctv
+                ? 'bg-blue-50 border-blue-200 text-blue-800'
+                : 'bg-slate-50 border-slate-200 text-slate-500'
+            }`}>
+              <span className="text-base">📹</span>
+              <div className="min-w-0">
+                <p className="font-bold text-[11px]">입구 방범 CCTV</p>
+                <p className="text-[10px]">{facility.cctv ? '설치 (24h 안전)' : '미설치'}</p>
+              </div>
+            </div>
+
+            <div className={`flex items-center gap-2 rounded-2xl p-2.5 border ${
+              facility.diaperTable
+                ? 'bg-purple-50 border-purple-200 text-purple-800'
+                : 'bg-slate-50 border-slate-200 text-slate-500'
+            }`}>
+              <span className="text-base">👶</span>
+              <div className="min-w-0">
+                <p className="font-bold text-[11px]">기저귀 교환대</p>
+                <p className="text-[10px] truncate">{facility.diaperTable ? (facility.diaperTableLocation || '구비됨') : '미구비'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-2xl p-2.5 border bg-emerald-50 border-emerald-200 text-emerald-800">
+              <span className="text-base">🚻</span>
+              <div className="min-w-0">
+                <p className="font-bold text-[11px]">오물 처리</p>
+                <p className="text-[10px]">{facility.flushType || '수세식 화장실'}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Bicycle Parking Rack Capacity Badge */}
         {facility.category === 'parking' && facility.capacity && (

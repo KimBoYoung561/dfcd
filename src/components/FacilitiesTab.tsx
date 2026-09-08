@@ -34,7 +34,8 @@ export default function FacilitiesTab({
   onSelectFacilityOnMap,
   onNavigateToFacility,
 }: FacilitiesTabProps) {
-  const [selectedCategory, setSelectedCategory] = useState<POICategory>('repair');
+  const [selectedCategory, setSelectedCategory] = useState<POICategory>('toilet');
+  const [toiletSubFilter, setToiletSubFilter] = useState<'all' | 'bell' | 'cctv' | 'diaper' | 'stream'>('all');
   const [repairSubFilter, setRepairSubFilter] = useState<'all' | 'station' | 'center'>('all');
   const [parkingSubFilter, setParkingSubFilter] = useState<'all' | 'dongan' | 'manan' | 'station' | 'large'>('all');
   const [waterSubFilter, setWaterSubFilter] = useState<'all' | 'sports' | 'children' | 'stream'>('all');
@@ -47,6 +48,12 @@ export default function FacilitiesTab({
   const cardListRef = useRef<HTMLDivElement>(null);
 
   const categories: { id: POICategory; label: string; icon: string; count: number }[] = useMemo(() => [
+    {
+      id: 'toilet',
+      label: '공중화장실',
+      icon: '🚻',
+      count: facilities.filter((f) => f.category === 'toilet').length,
+    },
     {
       id: 'repair',
       label: '수리/공기주입기',
@@ -74,7 +81,22 @@ export default function FacilitiesTab({
       const matchCat = fac.category === selectedCategory;
 
       let matchSub = true;
-      if (selectedCategory === 'repair') {
+      if (selectedCategory === 'toilet') {
+        if (toiletSubFilter === 'bell') {
+          matchSub = !!fac.emergencyBell;
+        } else if (toiletSubFilter === 'cctv') {
+          matchSub = !!fac.cctv;
+        } else if (toiletSubFilter === 'diaper') {
+          matchSub = !!fac.diaperTable;
+        } else if (toiletSubFilter === 'stream') {
+          matchSub =
+            fac.name.includes('수변') ||
+            fac.name.includes('천') ||
+            fac.name.includes('공원') ||
+            fac.address.includes('천') ||
+            fac.address.includes('공원');
+        }
+      } else if (selectedCategory === 'repair') {
         if (repairSubFilter === 'station') {
           matchSub = fac.name.includes('역') || fac.description.includes('출구') || fac.description.includes('역');
         } else if (repairSubFilter === 'center') {
@@ -133,7 +155,7 @@ export default function FacilitiesTab({
         };
       })
       .sort((a, b) => a.rawDistanceKm - b.rawDistanceKm);
-  }, [facilities, selectedCategory, repairSubFilter, parkingSubFilter, waterSubFilter, searchQuery, userBaseLoc]);
+  }, [facilities, selectedCategory, toiletSubFilter, repairSubFilter, parkingSubFilter, waterSubFilter, searchQuery, userBaseLoc]);
 
   const mapPoiFilters: POICategory[] = useMemo(() => {
     return [selectedCategory];
@@ -236,6 +258,7 @@ export default function FacilitiesTab({
                 type="button"
                 onClick={() => {
                   setSelectedCategory(cat.id);
+                  setToiletSubFilter('all');
                   setRepairSubFilter('all');
                   setParkingSubFilter('all');
                   setWaterSubFilter('all');
@@ -260,8 +283,34 @@ export default function FacilitiesTab({
         </div>
 
         {/* Sub-Filters Row */}
-        {(selectedCategory === 'repair' || selectedCategory === 'parking' || selectedCategory === 'water') && (
+        {(selectedCategory === 'toilet' || selectedCategory === 'repair' || selectedCategory === 'parking' || selectedCategory === 'water') && (
           <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pt-1 border-t border-slate-100 text-[11px]">
+            {/* Toilet Sub-Filters */}
+            {selectedCategory === 'toilet' && (
+              <div className="flex items-center gap-1 shrink-0">
+                <span className="text-[10px] text-slate-400 font-bold mr-1">편의/안심:</span>
+                {[
+                  { id: 'all', label: '전체 (243곳)' },
+                  { id: 'bell', label: '안심 비상벨 🚨' },
+                  { id: 'cctv', label: '방범 CCTV 📹' },
+                  { id: 'diaper', label: '기저귀교환대 👶' },
+                  { id: 'stream', label: '수변·공원 🌊' },
+                ].map((sub) => (
+                  <button
+                    key={sub.id}
+                    type="button"
+                    onClick={() => setToiletSubFilter(sub.id as any)}
+                    className={`shrink-0 rounded-lg px-2 py-0.5 text-[10px] font-bold transition-all ${
+                      toiletSubFilter === sub.id
+                        ? 'bg-amber-100 text-amber-900 border border-amber-300 font-bold'
+                        : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-transparent'
+                    }`}
+                  >
+                    {sub.label}
+                  </button>
+                ))}
+              </div>
+            )}
             {/* Water Sub-Filters */}
             {selectedCategory === 'water' && (
               <div className="flex items-center gap-1 shrink-0">
@@ -601,6 +650,40 @@ export default function FacilitiesTab({
                       </div>
                     </div>
 
+                    {/* Toilet Facility Quick Badges */}
+                    {fac.category === 'toilet' && (
+                      <div className="mt-2.5 flex flex-wrap gap-1.5 text-[10px] font-bold">
+                        {fac.emergencyBell && (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-rose-50 border border-rose-200 px-2 py-0.5 text-rose-700">
+                            <span>🚨</span>
+                            <span>안심비상벨{fac.emergencyBellLocation ? ` (${fac.emergencyBellLocation})` : ''}</span>
+                          </span>
+                        )}
+                        {fac.cctv && (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-blue-50 border border-blue-200 px-2 py-0.5 text-blue-700">
+                            <span>📹</span>
+                            <span>입구 CCTV</span>
+                          </span>
+                        )}
+                        {fac.diaperTable && (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-purple-50 border border-purple-200 px-2 py-0.5 text-purple-700">
+                            <span>👶</span>
+                            <span>기저귀교환대</span>
+                          </span>
+                        )}
+                        {fac.flushType && (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-slate-50 border border-slate-200 px-2 py-0.5 text-slate-700">
+                            <span>🚻</span>
+                            <span>{fac.flushType}</span>
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-emerald-700">
+                          <Clock size={10} className="text-emerald-600" />
+                          <span>상시 개방</span>
+                        </span>
+                      </div>
+                    )}
+
                     {/* Air Pump Status Quick Badges */}
                     {(fac.category === 'repair' || fac.facilityType === '공기주입기') && (
                       <div className="mt-2.5 flex flex-wrap gap-1.5 text-[10px] font-bold">
@@ -740,8 +823,8 @@ export default function FacilitiesTab({
                           }}
                           className="flex items-center gap-1.5 rounded-xl bg-[#0055FF] px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700 active:scale-95 transition-all"
                         >
-                          <Navigation size={12} fill="currentColor" />
-                          <span>길안내</span>
+                          <MapPin size={12} />
+                          <span>위치 보기</span>
                         </button>
                       </div>
                     </div>

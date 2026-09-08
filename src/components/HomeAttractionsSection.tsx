@@ -1,13 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Search, X, ChevronRight, ArrowUpDown, Sparkles } from 'lucide-react';
+import { Search, X, ChevronRight, ArrowUpDown, Sparkles, Navigation, Bot } from 'lucide-react';
 import { AnyangTourSpot, ANYANG_TOUR_SPOTS } from '../data/anyangAttractions';
 
 interface HomeAttractionsSectionProps {
   riderPosition: { lat: number; lng: number } | null;
   onSelectAttraction: (spot: AnyangTourSpot) => void;
+  onOpenAiChatbot?: () => void;
 }
 
-type CategoryTab = 'all' | 'nineGyeong' | 'anyang' | 'pyeongchon' | 'seoksu' | 'bisan' | 'nearby';
+type CategoryTab = 'nineGyeong' | 'all' | 'anyang' | 'pyeongchon' | 'seoksu' | 'bisan' | 'nearby';
 type SortMode = 'nineGyeong' | 'distance' | 'weather' | 'name';
 
 // 두 좌표 간 거리 계산 (km)
@@ -28,9 +29,10 @@ function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): 
 export default function HomeAttractionsSection({
   riderPosition,
   onSelectAttraction,
+  onOpenAiChatbot,
 }: HomeAttractionsSectionProps) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<CategoryTab>('all');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryTab>('nineGyeong');
   const [sortMode, setSortMode] = useState<SortMode>('nineGyeong');
 
   // 카테고리별 개수 산출
@@ -119,7 +121,33 @@ export default function HomeAttractionsSection({
 
   return (
     <div className="space-y-3 pt-1 select-none text-slate-900">
-      {/* ── 1. Search Bar ── */}
+      {/* ── 1. Search Bar & AI Chatbot Quick Trigger ── */}
+      {onOpenAiChatbot && (
+        <button
+          type="button"
+          onClick={onOpenAiChatbot}
+          className="flex w-full items-center justify-between rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 p-3 text-left text-white shadow-sm hover:brightness-105 active:scale-[0.99] transition-all"
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/20 text-amber-300 shadow-xs">
+              <Sparkles size={16} className="animate-pulse" />
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <p className="text-xs font-black">AI 자전거 명소 추천 챗봇</p>
+                <span className="rounded-full bg-amber-400 text-slate-950 px-1.5 py-0.2 text-[9px] font-black">
+                  실시간 맞춤
+                </span>
+              </div>
+              <p className="text-[10.5px] text-blue-100 truncate">
+                "노을 예쁜 곳", "초보자 평지 코스" 등 원하는 라이딩을 말씀해 주세요
+              </p>
+            </div>
+          </div>
+          <ChevronRight size={16} className="text-blue-200 shrink-0" />
+        </button>
+      )}
+
       <div className="relative flex items-center rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-2xs focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
         <Search size={16} className="text-slate-400 shrink-0 mr-2" />
         <input
@@ -141,8 +169,33 @@ export default function HomeAttractionsSection({
         )}
       </div>
 
-      {/* ── 2. Horizontal Scrollable Category Filter Chips ── */}
+      {/* ── 2. Horizontal Scrollable Category Filter Chips (안양 9경 맨 앞) ── */}
       <div className="flex items-center gap-1.5 overflow-x-auto hide-scrollbar pb-1 text-xs">
+        {/* 안양 9경 (공식 순서 1경~9경) */}
+        <button
+          type="button"
+          onClick={() => {
+            setSelectedCategory('nineGyeong');
+            setSortMode('nineGyeong');
+          }}
+          className={`shrink-0 flex items-center gap-1 rounded-2xl px-3 py-1.5 transition-all ${
+            selectedCategory === 'nineGyeong'
+              ? 'bg-[#0055FF] text-white font-black shadow-xs'
+              : 'bg-white text-slate-700 border border-slate-200 font-bold hover:bg-slate-50'
+          }`}
+        >
+          <span>🏆 안양 9경 (공식 순서)</span>
+          <span
+            className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+              selectedCategory === 'nineGyeong'
+                ? 'bg-white/20 text-white'
+                : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            {categoryCounts.nineGyeong}
+          </span>
+        </button>
+
         {/* 전체 */}
         <button
           type="button"
@@ -153,35 +206,13 @@ export default function HomeAttractionsSection({
               : 'bg-white text-slate-700 border border-slate-200 font-bold hover:bg-slate-50'
           }`}
         >
-          <span>🧭 전체</span>
+          <span>🧭 전체 명소</span>
           <span
             className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
               selectedCategory === 'all' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
             }`}
           >
             {categoryCounts.all}
-          </span>
-        </button>
-
-        {/* 안양 9경 */}
-        <button
-          type="button"
-          onClick={() => setSelectedCategory('nineGyeong')}
-          className={`shrink-0 flex items-center gap-1 rounded-2xl px-3 py-1.5 transition-all ${
-            selectedCategory === 'nineGyeong'
-              ? 'bg-[#0055FF] text-white font-black shadow-xs'
-              : 'bg-white text-slate-700 border border-slate-200 font-bold hover:bg-slate-50'
-          }`}
-        >
-          <span>🏆 안양 9경</span>
-          <span
-            className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-              selectedCategory === 'nineGyeong'
-                ? 'bg-white/20 text-white'
-                : 'bg-slate-100 text-slate-600'
-            }`}
-          >
-            {categoryCounts.nineGyeong}
           </span>
         </button>
 
@@ -411,12 +442,13 @@ export default function HomeAttractionsSection({
 
               {/* Spot Information */}
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.2 rounded-md">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
+                  <span className="text-[10px] font-black text-[#0055FF] bg-blue-50 px-1.5 py-0.2 rounded-md">
                     {spot.dong}
                   </span>
-                  <span className="text-[10px] font-bold text-slate-400">
-                    약 {spot.distanceKm}km
+                  <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded-md flex items-center gap-1">
+                    <Navigation size={9} className="text-emerald-600" fill="currentColor" />
+                    현위치 {spot.distanceKm < 1 ? `${Math.round(spot.distanceKm * 1000)}m` : `${spot.distanceKm.toFixed(1)}km`} · 자전거 약 {Math.max(2, Math.round((spot.distanceKm / 15) * 60))}분
                   </span>
                 </div>
 

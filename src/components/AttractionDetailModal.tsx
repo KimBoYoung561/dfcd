@@ -9,6 +9,22 @@ interface AttractionDetailModalProps {
   onClose: () => void;
   onFocusOnMap?: (spot: AnyangTourSpot) => void;
   weather?: WeatherSummary | null;
+  riderPosition?: { lat: number; lng: number } | null;
+}
+
+// 거리 계산 (km)
+function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return Math.round(R * c * 10) / 10;
 }
 
 export default function AttractionDetailModal({
@@ -17,8 +33,14 @@ export default function AttractionDetailModal({
   onClose,
   onFocusOnMap,
   weather,
+  riderPosition,
 }: AttractionDetailModalProps) {
   if (!isOpen || !spot) return null;
+
+  const userLat = riderPosition?.lat ?? 37.3943;
+  const userLng = riderPosition?.lng ?? 126.9568;
+  const distanceKm = getDistanceKm(userLat, userLng, spot.lat, spot.lng);
+  const cyclingTimeMin = Math.max(2, Math.round((distanceKm / 15) * 60));
 
   const kakaoMapUrl = `https://map.kakao.com/link/to/${encodeURIComponent(spot.name)},${spot.lat},${spot.lng}`;
   const naverMapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(spot.name)}`;
@@ -118,8 +140,24 @@ export default function AttractionDetailModal({
             ))}
           </div>
 
-          {/* Address & Dong */}
+          {/* Address & Dong & Distance */}
           <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3.5 space-y-2.5">
+            {/* Real-time Distance & Cycling Time */}
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-blue-50/80 border border-blue-200/80 text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-slate-800">
+                <Navigation size={15} className="text-[#0055FF]" fill="currentColor" />
+                <span>내 현재 위치에서 거리</span>
+              </div>
+              <div className="text-right">
+                <span className="font-black text-[#0055FF] text-sm">
+                  {distanceKm < 1 ? `${Math.round(distanceKm * 1000)}m` : `${distanceKm.toFixed(1)}km`}
+                </span>
+                <span className="text-[11px] text-slate-600 font-bold ml-1.5">
+                  (자전거 약 {cyclingTimeMin}분)
+                </span>
+              </div>
+            </div>
+
             <div className="flex items-start gap-2 text-xs">
               <MapPin size={16} className="text-[#0055FF] shrink-0 mt-0.5" />
               <div>

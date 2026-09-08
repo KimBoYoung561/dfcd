@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, useCallback, type PointerEvent } from 'react';
 import { CommunityReport, Facility, POICategory, RampAccessPoint } from '../types';
 import { loadKakaoMapsServices } from '../services/kakaoService';
-import { Layers, Plus, Minus, Check, Compass, Crosshair, RefreshCw, MapPin } from 'lucide-react';
+import { Layers, Plus, Minus, Check, Crosshair, RefreshCw, MapPin } from 'lucide-react';
 
 export interface KakaoMapProps {
   center: { lat: number; lng: number };
+  panToTrigger?: number;
   routePath?: [number, number][];
   passedPath?: [number, number][];
   remainingPath?: [number, number][];
@@ -25,6 +26,7 @@ export interface KakaoMapProps {
   onSelectReport?: (report: CommunityReport) => void;
   isRiding?: boolean;
   isSheetExpanded?: boolean;
+  onFindMyLocation?: () => void;
 }
 
 // POI category styling
@@ -32,6 +34,7 @@ const POI_ICONS: Record<POICategory, { emoji: string; color: string; label: stri
   water: { emoji: '💧', color: '#0284c7', label: '음수대' },
   repair: { emoji: '🔧', color: '#059669', label: '수리/공기주입기' },
   parking: { emoji: '🚲', color: '#4f46e5', label: '자전거 거치대' },
+  toilet: { emoji: '🚻', color: '#ea580c', label: '공중화장실' },
 };
 
 function getVisualMarkerPosition(facility: Facility, facilities: Facility[]) {
@@ -49,6 +52,7 @@ function getVisualMarkerPosition(facility: Facility, facilities: Facility[]) {
 
 export default function KakaoMap({
   center,
+  panToTrigger = 0,
   routePath,
   passedPath,
   remainingPath,
@@ -67,6 +71,7 @@ export default function KakaoMap({
   onSelectReport,
   isRiding = false,
   isSheetExpanded = false,
+  onFindMyLocation,
 }: KakaoMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapWrapperRef = useRef<HTMLDivElement>(null);
@@ -513,32 +518,17 @@ export default function KakaoMap({
       kakaoRiderOverlayRef.current = overlay;
     }
 
-    // 1인칭 모드이며 사용자가 수동 드래그 중이 아닐 때 실시간 중심 이동
-    if (isRiding && isHeadingLocked && !isUserInteracting) {
-      map.panTo(pos);
-      if (map.getLevel() > 3) {
-        map.setLevel(3);
-      }
-    }
-  }, [isMapLoaded, riderPosition, heading, isRiding, isHeadingLocked, isUserInteracting]);
+  }, [isMapLoaded, riderPosition]);
 
-  // 8. Counter-rotate POI and Badge Markers on map rotation (글자/아이콘 바로 세우기)
+  // Pan to center when center prop changes or panToTrigger updates
   useEffect(() => {
-    const isRotating = isRiding && isHeadingLocked && !isUserInteracting;
-    const counterDeg = isRotating ? heading : 0;
-    const elements = document.querySelectorAll('.navi-counter-rotate');
-    elements.forEach((el) => {
-      (el as HTMLElement).style.transform = `rotate(${counterDeg}deg)`;
-      (el as HTMLElement).style.transition = 'transform 0.35s ease-out';
-    });
-  }, [heading, isRiding, isHeadingLocked, isUserInteracting]);
-
-  // 9. Pan to center when idle
-  useEffect(() => {
-    if (isRiding || !isMapLoaded || !kakaoMapRef.current) return;
+    if (!isMapLoaded || !kakaoMapRef.current) return;
     const kakao = (window as any).kakao;
     kakaoMapRef.current.panTo(new kakao.maps.LatLng(center.lat, center.lng));
-  }, [center.lat, center.lng, isMapLoaded, isRiding]);
+    if (panToTrigger > 0) {
+      kakaoMapRef.current.setLevel(3);
+    }
+  }, [center.lat, center.lng, panToTrigger, isMapLoaded]);
 
   // Pan to Highlighted facility
   useEffect(() => {
@@ -565,21 +555,17 @@ export default function KakaoMap({
     }
   };
 
-  // 내 위치로 재탐색 및 1인칭 헤딩 추종 모드 복귀
+  // 내 위치로 즉시 이동
   const handleResumeTracking = () => {
     setIsUserInteracting(false);
     const target = riderPosition || center;
     if (kakaoMapRef.current) {
       const kakao = (window as any).kakao;
       kakaoMapRef.current.panTo(new kakao.maps.LatLng(target.lat, target.lng));
-      kakaoMapRef.current.setLevel(isRiding ? 3 : 4);
+      kakaoMapRef.current.setLevel(3);
     }
-  };
-
-  const handleToggleHeading = () => {
-    setIsUserInteracting(false);
-    if (onToggleHeadingLock) {
-      onToggleHeadingLock();
+    if (onFindMyLocation) {
+      onFindMyLocation();
     }
   };
 
@@ -587,12 +573,6 @@ export default function KakaoMap({
     setLoadError(null);
     setInitAttempts((prev) => prev + 1);
   };
-
-  // ── 1인칭 헤딩 추종 회전 및 위치 오프셋 계산 ──
-  const is1stPersonActive = isRiding && isHeadingLocked && !isUserInteracting;
-  const mapTransformStyle = is1stPersonActive
-    ? `translateY(${isSheetExpanded ? '-14%' : '8%'}) rotate(-${heading}deg) scale(1.45)`
-    : undefined;
 
   return (
     <div
@@ -602,19 +582,8 @@ export default function KakaoMap({
       onPointerUp={handlePointerUp}
       className="relative h-full w-full bg-slate-100 overflow-hidden isolate z-0 touch-none select-none kakao-map-container"
     >
-      {/* ── 1. Rotatable & Scaled Map Viewport Layer ── */}
-      <div
-        className={
-          is1stPersonActive
-            ? 'absolute inset-[-30%] w-[160%] h-[160%] origin-center pointer-events-auto'
-            : 'absolute inset-0 w-full h-full origin-center pointer-events-auto'
-        }
-        style={{
-          transform: mapTransformStyle,
-          transformOrigin: '50% 50%',
-          transition: is1stPersonActive ? 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)' : 'none',
-        }}
-      >
+      {/* ── 1. Map Viewport Layer ── */}
+      <div className="absolute inset-0 w-full h-full pointer-events-auto">
         <div ref={containerRef} className="h-full w-full" />
       </div>
 
@@ -646,73 +615,23 @@ export default function KakaoMap({
         </div>
       )}
 
-      {/* ── 3. 지도 드래그 탐색 중일 때 나타나는 '내 위치로 복귀' 플로팅 버튼 ── */}
-      {isRiding && isUserInteracting && isMapLoaded && (
-        <div className="absolute top-36 left-1/2 -translate-x-1/2 z-30 animate-in fade-in zoom-in-95 duration-200 pointer-events-auto">
+      {/* ── Fixed Floating Map Controls ── */}
+      {isMapLoaded && (
+        <div className="absolute right-3.5 top-20 z-20 flex flex-col gap-2 pointer-events-auto transition-all duration-300">
+          {/* Kakao Bicycle Overlay Layer Toggle Button */}
           <button
             type="button"
-            onClick={handleResumeTracking}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#0055FF] text-white font-bold text-xs shadow-2xl shadow-blue-500/50 border border-blue-400/40 active:scale-95 transition-all hover:bg-blue-600"
+            onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)}
+            className={`flex h-10 w-10 items-center justify-center rounded-xl border shadow-md backdrop-blur-xl active:scale-95 transition-all ${
+              isBicycleOverlayOn
+                ? 'bg-[#0055FF] text-white border-[#0055FF]'
+                : 'bg-white/95 text-slate-600 border-slate-200 hover:text-slate-900'
+            }`}
+            title={isBicycleOverlayOn ? '카카오 자전거 도로망 켜짐 (클릭하여 설정)' : '카카오 자전거 도로망 꺼짐 (클릭하여 설정)'}
+            aria-label="자전거 지도 레이어 설정"
           >
-            <Crosshair size={16} className="animate-spin-slow" />
-            <span>내 위치로 복귀 (1인칭 시점)</span>
+            <Layers size={18} />
           </button>
-        </div>
-      )}
-
-      {/* ── 4. Fixed Floating Map Controls (Not Rotated) ── */}
-      {isMapLoaded && (
-        <div
-          className={`absolute right-3.5 z-20 flex flex-col gap-2 pointer-events-auto transition-all duration-300 ${
-            isRiding ? 'top-40' : 'top-20'
-          }`}
-        >
-          {/* 1인칭 헤딩 추종 vs 2D 북쪽 고정 나침반 버튼 */}
-          {isRiding && onToggleHeadingLock && (
-            <button
-              type="button"
-              onClick={handleToggleHeading}
-              className={`flex h-11 w-11 items-center justify-center rounded-2xl border shadow-xl backdrop-blur-xl active:scale-95 transition-all ${
-                is1stPersonActive
-                  ? 'bg-[#0055FF] text-white border-[#0055FF] ring-2 ring-blue-400/50'
-                  : 'bg-white/95 text-slate-700 border-slate-200 hover:text-slate-900'
-              }`}
-              title={is1stPersonActive ? '1인칭 주행방향 추종 중 (클릭 시 북쪽 고정 2D)' : '북쪽 고정 2D (클릭 시 1인칭 회전)'}
-              aria-label="헤딩 1인칭 시점 토글"
-            >
-              <div className="relative flex items-center justify-center">
-                <Compass
-                  size={22}
-                  className={`transition-transform duration-300 ${is1stPersonActive ? 'text-white' : 'text-slate-600'}`}
-                  style={{ transform: `rotate(${is1stPersonActive ? 0 : -heading}deg)` }}
-                />
-                <div
-                  className={`absolute -top-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full text-[8px] font-black ${
-                    is1stPersonActive ? 'bg-cyan-300 text-blue-900' : 'bg-slate-300 text-slate-700'
-                  }`}
-                >
-                  {is1stPersonActive ? '3D' : 'N'}
-                </div>
-              </div>
-            </button>
-          )}
-
-          {/* Kakao Bicycle Overlay Layer Toggle Button (Only in Idle/Select mode) */}
-          {!isRiding && (
-            <button
-              type="button"
-              onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)}
-              className={`flex h-10 w-10 items-center justify-center rounded-xl border shadow-md backdrop-blur-xl active:scale-95 transition-all ${
-                isBicycleOverlayOn
-                  ? 'bg-[#0055FF] text-white border-[#0055FF]'
-                  : 'bg-white/95 text-slate-600 border-slate-200 hover:text-slate-900'
-              }`}
-              title={isBicycleOverlayOn ? '카카오 자전거 도로망 켜짐 (클릭하여 설정)' : '카카오 자전거 도로망 꺼짐 (클릭하여 설정)'}
-              aria-label="자전거 지도 레이어 설정"
-            >
-              <Layers size={18} />
-            </button>
-          )}
 
           <button
             type="button"

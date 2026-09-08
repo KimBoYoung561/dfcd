@@ -54,6 +54,120 @@ function kakaoProxyPlugin(): Plugin {
           }
         }
 
+        if (req.url && req.url.startsWith('/api/disaster-alerts')) {
+          try {
+            const parsedUrl = new URL(req.url, 'http://localhost:3000');
+            const key = parsedUrl.searchParams.get('key') || '1087783ba2cb4043bb9884a633d99b12';
+            const endpoint = 'https://www.safetydata.go.kr/V2/api/DSSP-IF-00247';
+            const targetUrl = `${endpoint}?serviceKey=${encodeURIComponent(key)}&returnType=json&pageNo=1&numOfRows=15`;
+            
+            const incomingReferer = req.headers.referer || 'https://ais-dev-ieeoslyj37ibcafauz7ird-41813439801.asia-east1.run.app/';
+            const incomingOrigin = req.headers.origin || 'https://ais-dev-ieeoslyj37ibcafauz7ird-41813439801.asia-east1.run.app';
+
+            const tryFetchWithHeaders = async (referer: string, origin: string) => {
+              const controller = new AbortController();
+              const timeout = setTimeout(() => controller.abort(), 4000);
+              try {
+                const upstreamRes = await fetch(targetUrl, {
+                  signal: controller.signal,
+                  headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)',
+                    'Accept': 'application/json',
+                    'Referer': referer,
+                    'Origin': origin,
+                  },
+                });
+                clearTimeout(timeout);
+                const text = await upstreamRes.text();
+                try {
+                  return { data: JSON.parse(text), status: upstreamRes.status, text };
+                } catch {
+                  return { data: { rawText: text }, status: upstreamRes.status, text };
+                }
+              } catch (err: any) {
+                clearTimeout(timeout);
+                return { error: err.message || '네트워크 오류' };
+              }
+            };
+
+            // First attempt with registered cloud run domain
+            let attempt = await tryFetchWithHeaders(incomingReferer, incomingOrigin);
+            
+            // If unregistered or failed, also test with localhost
+            if (attempt.data?.header?.resultCode === '30' || attempt.error) {
+              const fallbackAttempt = await tryFetchWithHeaders('http://localhost:3000/', 'http://localhost:3000');
+              if (fallbackAttempt.data?.header?.resultCode !== '30' && !fallbackAttempt.error) {
+                attempt = fallbackAttempt;
+              }
+            }
+
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.setHeader('Access-Control-Allow-Origin', '*');
+
+            if (attempt.error) {
+              res.statusCode = 200;
+              res.end(JSON.stringify({
+                connected: false,
+                status: 'network_error',
+                serviceKey: key,
+                apiSource: '행정안전부 재난안전데이터공유플랫폼 (safetydata.go.kr)',
+                endpoint: '/V2/api/DSSP-IF-00247 (재난상황 및 긴급재난문자)',
+                errorMsg: `네트워크 연결 오류: ${attempt.error}`,
+                detailedReason: '공공 재난안전데이터공유플랫폼 서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+                lastCheckedAt: new Date().toISOString(),
+                items: [],
+              }));
+              return;
+            }
+
+            const rawData = attempt.data;
+            const header = rawData?.header;
+            const isUnregistered = header?.resultCode === '30' || header?.resultMsg?.includes('NOT REGISTERED') || header?.errorMsg?.includes('등록되지 않은');
+
+            if (isUnregistered) {
+              res.statusCode = 200;
+              res.end(JSON.stringify({
+                connected: false,
+                status: 'unregistered_key',
+                serviceKey: key,
+                registeredUrl: incomingOrigin,
+                apiSource: '행정안전부 재난안전데이터공유플랫폼 (safetydata.go.kr)',
+                endpoint: '/V2/api/DSSP-IF-00247 (재난상황 및 긴급재난문자)',
+                resultCode: header?.resultCode || '30',
+                resultMsg: header?.resultMsg || 'SERVICE KEY IS NOT REGISTERED ERROR',
+                errorMsg: header?.errorMsg || '등록되지 않은 서비스키',
+                detailedReason: `등록해주신 URL(${incomingOrigin})을 포함하여 공공서버에 인증 요청을 전송했으나, 정부 API 게이트웨이에서 [등록되지 않은 서비스키 (코드 30)]가 응답되었습니다. 공공데이터포털 정책상 도메인 추가 등록/수정 후 게이트웨이에 실제 동기화되기까지 약 1~2시간(정시 배치) 소요될 수 있습니다.`,
+                lastCheckedAt: new Date().toISOString(),
+                items: [],
+              }));
+              return;
+            }
+
+            // If valid items are returned
+            const bodyItems = Array.isArray(rawData?.body) ? rawData.body : [];
+            res.statusCode = 200;
+            res.end(JSON.stringify({
+              connected: true,
+              status: 'connected',
+              serviceKey: key,
+              apiSource: '행정안전부 재난안전데이터공유플랫폼 (safetydata.go.kr)',
+              endpoint: '/V2/api/DSSP-IF-00247 (재난상황 및 긴급재난문자)',
+              resultCode: header?.resultCode || '00',
+              resultMsg: header?.resultMsg || 'NORMAL SERVICE',
+              lastCheckedAt: new Date().toISOString(),
+              rawCount: bodyItems.length,
+              items: bodyItems,
+            }));
+            return;
+          } catch (err: any) {
+            console.error('Failed to proxy disaster API:', err);
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json; charset=utf-8');
+            res.end(JSON.stringify({ error: err.message }));
+            return;
+          }
+        }
+
         next();
       });
     },

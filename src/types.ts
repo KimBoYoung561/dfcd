@@ -1,6 +1,6 @@
-export type AppState = 'idle' | 'courseSelected' | 'riding';
+export type AppState = 'idle' | 'courseSelected';
 
-export type TabType = 'home' | 'record' | 'facilities' | 'profile';
+export type TabType = 'home' | 'facilities' | 'record' | 'profile';
 
 export type RouteType = 'oneway' | 'roundtrip';
 
@@ -17,7 +17,7 @@ export interface RouteSearchParams {
   preferredFilter?: FilterCategory;
 }
 
-export type POICategory = 'water' | 'repair' | 'parking';
+export type POICategory = 'water' | 'repair' | 'parking' | 'toilet';
 
 export interface LatLng {
   lat: number;
@@ -81,7 +81,7 @@ export interface Facility {
   name: string;
   category: POICategory;
   categoryName: string;
-  facilityType?: '음수대' | '수리시설' | '공기주입기' | '자전거보관소';
+  facilityType?: '음수대' | '수리시설' | '공기주입기' | '자전거보관소' | '화장실';
   address: string;
   roadAddress?: string;
   lat: number;
@@ -96,9 +96,13 @@ export interface Facility {
   openHours?: string;
   managementAgency?: string;
   emergencyBell?: boolean;
+  emergencyBellLocation?: string | null;
   disabledToilet?: boolean;
   cctv?: boolean;
   diaperTable?: boolean;
+  diaperTableLocation?: string | null;
+  flushType?: string | null;
+  installationYear?: string | null;
   capacity?: number;
 }
 
@@ -120,6 +124,33 @@ export type ThemeColor = 'blue' | 'green' | 'dark' | 'high-contrast';
 export type FontSize = 'normal' | 'large' | 'xlarge';
 export type ReportCategory = 'closure' | 'accident' | 'damage' | 'hazard' | 'flooding';
 
+export interface DisasterAlertItem {
+  id: string;
+  category: ReportCategory;
+  categoryName: string;
+  title: string;
+  location: string;
+  content: string;
+  timestamp: string;
+  sourceAgency: string;
+  emergencyLevel?: '안내' | '주의' | '경계' | '심각';
+  coordinates?: LatLng;
+}
+
+export interface DisasterApiStatus {
+  connected: boolean;
+  status: 'connected' | 'unregistered_key' | 'invalid_key' | 'network_error' | 'no_data';
+  serviceKey: string;
+  apiSource: string;
+  endpoint: string;
+  resultCode?: string;
+  resultMsg?: string;
+  errorMsg?: string;
+  detailedReason?: string;
+  lastCheckedAt: string;
+  items: DisasterAlertItem[];
+}
+
 export interface CommunityReport {
   id: string;
   coordinates?: LatLng;
@@ -132,6 +163,9 @@ export interface CommunityReport {
   status: 'active' | 'resolved';
   likes: number;
   isLiked?: boolean;
+  sourceType?: 'official_disaster' | 'rider_report';
+  sourceAgency?: string;
+  emergencyLevel?: '안내' | '주의' | '경계' | '심각';
 }
 
 export interface UserPreferences {

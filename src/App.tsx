@@ -1,32 +1,24 @@
-import { useState, useEffect, useRef, type TouchEvent } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
-  Compass,
-  Navigation,
-  PenLine,
   User,
   X,
-  Mail,
   ChevronRight,
   ChevronDown,
   ChevronUp,
   Clock,
   Sparkles,
   BookOpen,
-  RotateCcw,
   TreePine,
   ShieldCheck,
   Zap,
   Info,
-  Footprints,
   AlertTriangle,
   ShieldAlert,
-  ArrowUp,
-  ArrowLeft,
-  ArrowRight,
-  Flag,
   MapPin,
   Radio,
   Crosshair,
+  Wrench,
+  Bike,
 } from 'lucide-react';
 
 import {
@@ -38,11 +30,10 @@ import {
   POICategory,
   Course,
   Facility,
-  RidingRecord,
   UserPreferences,
   RampAccessPoint,
-  NavStep,
   CommunityReport,
+  RidingRecord,
 } from './types';
 
 import { FILTER_TAGS, COURSE_DATA, ANYANG_CENTER, OFFICIAL_STREAM_LINES } from './data/courses';
@@ -60,23 +51,21 @@ import {
 import { coordToAddress, geocodeFacilityLocation, refineFacilitySearchKeyword, Coordinates } from './services/kakaoService';
 import { getBearing, getPointToPolylineDistanceMeters } from './utils/navigationMath';
 import MapComponent from './components/MapComponent';
-import NavigationHeader from './components/NavigationHeader';
-import NavigationInfoSheet from './components/NavigationInfoSheet';
 import QuickReportModal from './components/QuickReportModal';
-import RideSummaryModal from './components/RideSummaryModal';
 import DepartureTimeModal from './components/DepartureTimeModal';
 import FacilityDetailModal from './components/FacilityDetailModal';
 import { fetchKmaWeather, type WeatherSummary } from './services/weatherService';
 import OfficialBicycleMapModal from './components/OfficialBicycleMapModal';
 import AllCoursesModal from './components/AllCoursesModal';
-import RecordTab from './components/RecordTab';
 import FacilitiesTab from './components/FacilitiesTab';
+import RecordTab from './components/RecordTab';
 import ProfileTab from './components/ProfileTab';
 import WeatherCyclingSafetyBanner from './components/WeatherCyclingSafetyBanner';
 import HomeWeatherAiCard from './components/HomeWeatherAiCard';
 import HomeAttractionsSection from './components/HomeAttractionsSection';
 import AttractionDetailModal from './components/AttractionDetailModal';
 import GpsTroubleshootModal from './components/GpsTroubleshootModal';
+import AiChatbotModal from './components/AiChatbotModal';
 import { ANYANG_TOUR_SPOTS, AnyangTourSpot } from './data/anyangAttractions';
 import { GpsStatus, GpsHubPreset } from './utils/gpsHelper';
 
@@ -270,9 +259,9 @@ function BottomNav({
   onChangeTab: (tab: TabType) => void;
 }) {
   const items: Array<{ id: TabType; icon: any; label: string }> = [
-    { id: 'record', icon: Compass, label: '주행기록' },
-    { id: 'home', icon: PenLine, label: '메인' },
-    { id: 'facilities', icon: Mail, label: '편의시설' },
+    { id: 'home', icon: MapPin, label: '메인' },
+    { id: 'facilities', icon: Wrench, label: '편의시설' },
+    { id: 'record', icon: Bike, label: '기록·안전' },
     { id: 'profile', icon: User, label: '내 설정' },
   ];
   return (
@@ -306,19 +295,19 @@ function HomeSummarySheet({
   origin,
   weather,
   riderPosition,
-  onOpenOfficialGuide,
   onOpenAttractionModal,
   onOpenGpsModal,
   onSelectAttraction,
+  onOpenAiChatbot,
   onNavigateToFacilitiesTab,
 }: {
   origin: string;
   weather: WeatherSummary | null;
   riderPosition: { lat: number; lng: number } | null;
-  onOpenOfficialGuide: () => void;
   onOpenAttractionModal: () => void;
   onOpenGpsModal: () => void;
   onSelectAttraction: (spot: AnyangTourSpot) => void;
+  onOpenAiChatbot?: () => void;
   onNavigateToFacilitiesTab?: () => void;
 }) {
   return (
@@ -330,337 +319,8 @@ function HomeSummarySheet({
       <HomeAttractionsSection
         riderPosition={riderPosition}
         onSelectAttraction={onSelectAttraction}
+        onOpenAiChatbot={onOpenAiChatbot}
       />
-
-      {/* ── 3. Official Bicycle Map & Citizen Guide Quick Button ── */}
-      <button
-        type="button"
-        onClick={onOpenOfficialGuide}
-        className="flex w-full items-center justify-between rounded-2xl border border-blue-200 bg-blue-50/70 p-3 text-left shadow-xs hover:bg-blue-100 active:scale-[0.99] transition-all"
-      >
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#0055FF] text-white shadow-xs">
-            <BookOpen size={16} />
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs font-bold text-slate-900">안양시 자전거 공식 지도 & 시민 가이드</p>
-            <p className="mt-0.5 text-[11px] text-slate-600 truncate">5대 하천 노선망 · 진출입 램프 · 시민 자전거보험</p>
-          </div>
-        </div>
-        <ChevronRight size={16} className="text-slate-400 shrink-0" />
-      </button>
-    </div>
-  );
-}
-
-function StepIconRenderer({ iconType, warn }: { iconType: string; warn?: boolean }) {
-  switch (iconType) {
-    case 'crosswalk':
-      return <Footprints size={18} className="text-amber-500 shrink-0" />;
-    case 'left':
-      return <ArrowLeft size={18} className={warn ? 'text-amber-500 shrink-0' : 'text-[#0055FF] shrink-0'} />;
-    case 'right':
-      return <ArrowRight size={18} className={warn ? 'text-amber-500 shrink-0' : 'text-[#0055FF] shrink-0'} />;
-    case 'u-turn':
-      return <RotateCcw size={18} className="text-[#E11D48] shrink-0" />;
-    case 'arrive':
-      return <Flag size={18} className="text-[#10B981] shrink-0" />;
-    case 'up':
-    default:
-      return <ArrowUp size={18} className="text-[#0055FF] shrink-0" />;
-  }
-}
-
-function CourseSelectedSheet({
-  course,
-  departureTime,
-  onStart,
-  onClose,
-  onOpenDepartureModal,
-  onSelectFilter,
-  activeFilter,
-}: {
-  course: Course;
-  departureTime: string;
-  onStart: () => void;
-  onClose: () => void;
-  onOpenDepartureModal: () => void;
-  onSelectFilter: (tag: FilterCategory) => void;
-  activeFilter: FilterCategory;
-}) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const touchStartY = useRef<number | null>(null);
-
-  // Crosswalks on this route
-  const crosswalkSteps = course.navSteps.filter((s) => s.iconType === 'crosswalk' || s.crosswalkInfo);
-
-  // Swipe / Drag handling
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleTouchMove = (e: TouchEvent) => {
-    if (touchStartY.current === null) return;
-    const currentY = e.touches[0].clientY;
-    const diff = touchStartY.current - currentY;
-    if (diff > 40) {
-      setIsExpanded(true); // Swiped up
-    } else if (diff < -40) {
-      setIsExpanded(false); // Swiped down
-    }
-  };
-
-  const handleTouchEnd = () => {
-    touchStartY.current = null;
-  };
-
-  return (
-    <div
-      className="text-slate-900 transition-all duration-300"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      {/* ── Drag Handle & Mini Header Bar (Always Visible) ── */}
-      <div
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="px-5 pt-3 pb-2 cursor-pointer group flex flex-col items-center select-none"
-      >
-        <div className="h-1.5 w-12 rounded-full bg-slate-300 group-hover:bg-slate-400 transition-colors" />
-        <div className="w-full flex items-center justify-between mt-2">
-          <div className="flex items-center gap-3">
-            <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-black text-[#0055FF] leading-none">{course.timeMinutes}</span>
-              <span className="text-sm font-bold text-slate-800">분</span>
-            </div>
-            <div className="h-4 w-[1px] bg-slate-200" />
-            <div className="text-xs font-bold text-slate-600">
-              <span>{course.distanceKm}km</span>
-              <span className="mx-1 text-slate-300">·</span>
-              <span className="text-slate-500">도착 {course.arrival}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-slate-400 group-hover:text-[#0055FF] flex items-center gap-0.5 transition-colors">
-              {isExpanded ? (
-                <>
-                  <ChevronDown size={14} /> 접기
-                </>
-              ) : (
-                <>
-                  <ChevronUp size={14} /> 상세 정보
-                </>
-              )}
-            </span>
-          </div>
-        </div>
-
-        {/* Swipe Up Visual Hint if collapsed */}
-        {!isExpanded && (
-          <div className="w-full mt-1 flex items-center justify-center">
-            <span className="text-[10px] font-bold text-slate-400 flex items-center gap-1 bg-slate-100 px-3 py-0.5 rounded-full">
-              <ChevronUp size={11} className="text-[#0055FF] animate-bounce" /> 위로 올려서 횡단보도 & 도로 정보 보기
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Primary Action Buttons (Always Visible) */}
-      <div className="px-5 pb-3 pt-1 flex gap-2">
-        <button
-          type="button"
-          onClick={onClose}
-          className="flex-1 rounded-2xl border border-slate-200 bg-slate-100 py-3 text-xs font-bold text-slate-700 hover:bg-slate-200 active:bg-slate-300 min-h-[44px] transition-colors"
-        >
-          경로 취소
-        </button>
-        <button
-          type="button"
-          onClick={onStart}
-          className="flex-[2] flex items-center justify-center gap-2 rounded-2xl bg-[#0055FF] py-3 text-xs font-bold text-white shadow-md hover:bg-blue-700 active:scale-98 min-h-[44px] transition-all"
-        >
-          <Navigation size={15} fill="currentColor" />
-          <span>자전거 안내 시작</span>
-        </button>
-      </div>
-
-      {/* ── Expanded Full Details View (Scrollable) ── */}
-      {isExpanded && (
-        <div className="px-5 pb-5 pt-2 max-h-[58vh] overflow-y-auto hide-scrollbar space-y-3.5 border-t border-slate-200/80 mt-1 animate-in fade-in slide-in-from-bottom-3 duration-200">
-          
-          {/* 1. In-Sheet Filter Category Chips (경치 좋은, 평지 중심 등 키워드) */}
-          <div className="bg-slate-50 border border-slate-200 p-3 rounded-2xl">
-            <p className="text-[11px] font-bold text-slate-600 mb-2 flex items-center gap-1">
-              <Sparkles size={12} className="text-[#0055FF]" />
-              추천 경로 키워드 선택
-            </p>
-            <div className="flex gap-1.5 overflow-x-auto hide-scrollbar pb-0.5">
-              {FILTER_TAGS.map((tag) => {
-                const isSelected = activeFilter === tag;
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => onSelectFilter(tag)}
-                    className={`shrink-0 rounded-xl px-3 py-1.5 min-h-[34px] text-[11px] font-bold whitespace-nowrap transition-all ${
-                      isSelected
-                        ? 'bg-[#0055FF] text-white shadow-sm scale-[1.02]'
-                        : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
-                    }`}
-                  >
-                    {tag === '추천 코스' && '✨ '}
-                    {tag === '경치 좋은' && '🌳 '}
-                    {tag === '평지 중심' && '🌿 '}
-                    {tag === '단거리' && '⚡ '}
-                    {tag === '계단 없음' && '🛡️ '}
-                    {tag === '낮은 혼잡도' && '🧘 '}
-                    {tag}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 2. Course Description & Scenic Highlights */}
-          <div className="rounded-2xl bg-blue-50/50 border border-blue-100 p-3">
-            <p className="text-xs text-slate-700 leading-relaxed">{course.description}</p>
-            {course.scenicHighlights && course.scenicHighlights.length > 0 && (
-              <div className="mt-2 flex items-center gap-1.5 flex-wrap">
-                <span className="text-[10px] font-bold text-amber-800 flex items-center gap-1">
-                  <TreePine size={11} /> 주요 경치:
-                </span>
-                {course.scenicHighlights.map((spot, idx) => (
-                  <span
-                    key={idx}
-                    className="bg-amber-100/70 text-amber-900 border border-amber-200 px-2 py-0.5 rounded-lg text-[10px] font-bold"
-                  >
-                    {spot}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 3. Road Composition Stacked Bar (안양시 자전거도로 노선지정 고시 기준) */}
-          <PathTypeBar
-            riverPathRatio={course.riverPathRatio}
-            segregatedRatio={course.segregatedRatio}
-            unsegregatedRatio={course.unsegregatedRatio}
-            dedicatedBikeRatio={course.dedicatedBikeRatio}
-            sharedBikeRatio={course.sharedBikeRatio}
-            sidewalkRatio={course.sidewalkRatio}
-            legacyBikePath={course.bikePath}
-            legacyRoad={course.road}
-            legacySidewalk={course.sidewalk}
-          />
-
-          {/* 4. Crosswalk Safety & Actual Data Card (첨부된 안양시 횡단보도 실측 데이터) */}
-          <div className="rounded-2xl bg-amber-50/60 border border-amber-200 p-3.5">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold text-amber-900 flex items-center gap-1.5">
-                <Footprints size={14} className="text-amber-600" />
-                안양시 횡단보도 실측 안전 정보
-              </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300">
-                자전거 하차 보행 구간
-              </span>
-            </div>
-
-            <div className="space-y-1.5 mb-2">
-              {crosswalkSteps.length > 0 ? (
-                crosswalkSteps.map((cw, idx) => (
-                  <div key={idx} className="flex items-start gap-2 bg-white/80 border border-amber-200/80 p-2 rounded-xl text-[11px]">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-700 font-black text-[10px]">
-                      {idx + 1}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold text-slate-800">
-                        {cw.crosswalkInfo ? `${cw.crosswalkInfo.dong} 횡단보도` : cw.text}
-                      </p>
-                      {cw.crosswalkInfo && (
-                        <p className="text-[10px] text-amber-800 font-semibold mt-0.5">
-                          실측 규격: 폭 {cw.crosswalkInfo.widthM}m · 길이 {cw.crosswalkInfo.lengthM}m ({cw.crosswalkInfo.roadName || '주요 접속로'})
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="bg-white/80 border border-amber-200/80 p-2 rounded-xl text-[11px] text-slate-700">
-                  <p className="font-bold text-slate-800">안양천·학의천 수변 전용로 (횡단보도 0개 구간)</p>
-                  <p className="text-[10px] text-emerald-700 font-semibold mt-0.5">
-                    전구간 하천 무신호 직통로로 보행자 및 횡단보도 간섭 없이 안전하게 주행 가능합니다.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            <p className="text-[10px] text-amber-800 flex items-center gap-1 font-medium">
-              <AlertTriangle size={11} className="shrink-0 text-amber-600" />
-              도로교통법상 횡단보도 통과 시에는 반드시 자전거에서 내려 보행자로 건너야 합니다.
-            </p>
-          </div>
-
-          {/* 5. Statistics Grid (Slope, Stairs, Calories) */}
-          <div className="grid grid-cols-3 gap-2.5 rounded-2xl bg-slate-50 border border-slate-200 p-3 text-center">
-            <div>
-              <span className="text-[10px] font-bold text-slate-500">평균 경사도</span>
-              <p className="text-sm font-black text-slate-900 mt-0.5">{course.slope}</p>
-            </div>
-            <div className="border-x border-slate-200">
-              <span className="text-[10px] font-bold text-slate-500">예상 소모</span>
-              <p className="text-sm font-black text-[#0055FF] mt-0.5">{course.calories} kcal</p>
-            </div>
-            <div>
-              <span className="text-[10px] font-bold text-slate-500">계단 유무</span>
-              <p className="text-sm font-black text-emerald-600 mt-0.5">{course.stairs === 0 ? '0개 (무장애)' : `${course.stairs}개`}</p>
-            </div>
-          </div>
-
-          {/* 6. Navigation Turn-by-Turn Steps */}
-          <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3.5">
-            <p className="text-xs font-bold text-slate-800 mb-2.5 flex items-center justify-between">
-              <span>구간별 경로 상세 안내</span>
-              <span className="text-[10px] text-slate-500 font-semibold">총 {course.navSteps.length}개 스텝</span>
-            </p>
-
-            <div className="space-y-2">
-              {course.navSteps.map((step, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 bg-white border border-slate-200/80 p-2.5 rounded-xl">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 border border-slate-200 mt-0.5">
-                    <StepIconRenderer iconType={step.iconType} warn={step.warn} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs font-bold text-slate-800 truncate">{step.text}</p>
-                      {step.distanceMeter > 0 && (
-                        <span className="text-[10px] font-bold text-[#0055FF] shrink-0">{step.distanceMeter}m</span>
-                      )}
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-0.5">{step.sub}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* 7. Live Departure & Arrival Time Indicator */}
-          <div
-            onClick={onOpenDepartureModal}
-            className="flex cursor-pointer items-center justify-between rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-slate-100 active:scale-[0.99] transition-all min-h-[44px]"
-          >
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-              <Clock size={15} className="text-[#0055FF]" />
-              <span>출발 {departureTime} 기준 (실시간 동기화)</span>
-            </div>
-            <span className="text-sm font-bold text-slate-900">
-              도착 예정: <span className="text-[#0055FF] font-bold">{course.arrival}</span>
-            </span>
-          </div>
-
-        </div>
-      )}
     </div>
   );
 }
@@ -670,6 +330,7 @@ export default function App() {
   // Navigation & Screen states
   const [appState, setAppState] = useState<AppState>('idle');
   const [currentTab, setCurrentTab] = useState<TabType>('home');
+  const [mapCenter, setMapCenter] = useState<Coordinates>(ANYANG_CENTER);
 
   // Route & Course selection
   const [origin, setOrigin] = useState('내 현재 위치');
@@ -688,8 +349,6 @@ export default function App() {
   const [isAllCoursesOpen, setIsAllCoursesOpen] = useState(false);
   const [isQuickReportOpen, setIsQuickReportOpen] = useState(false);
   const [selectedFacilityDetail, setSelectedFacilityDetail] = useState<Facility | null>(null);
-  const [finishedRideRecord, setFinishedRideRecord] = useState<RidingRecord | null>(null);
-  const [isRideSummaryOpen, setIsRideSummaryOpen] = useState(false);
 
   // GPS & Troubleshoot State
   const [gpsStatus, setGpsStatus] = useState<GpsStatus>('active');
@@ -702,6 +361,7 @@ export default function App() {
   // Anyang Attractions & Tour Spots State
   const [selectedAttraction, setSelectedAttraction] = useState<AnyangTourSpot | null>(ANYANG_TOUR_SPOTS[0]);
   const [isAttractionModalOpen, setIsAttractionModalOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   // Real-time Community Reports state
   const [reports, setReports] = useState<CommunityReport[]>(INITIAL_COMMUNITY_REPORTS);
@@ -714,6 +374,84 @@ export default function App() {
   } | null>(null);
   const [weather, setWeather] = useState<WeatherSummary | null>(null);
   const lastTriggeredReportIdRef = useRef<string | null>(null);
+
+  // Riding Records with LocalStorage Persistence
+  const [records, setRecords] = useState<RidingRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('anyang_riding_records');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error(e);
+    }
+    return [
+      {
+        id: 'rec-1',
+        date: '2026-08-14 18:30',
+        courseName: '안양천-학의천 쌍개울 힐링 순환 코스',
+        distanceKm: 5.8,
+        durationMinutes: 25,
+        avgSpeedKmh: 19.5,
+        maxSpeedKmh: 28.0,
+        calories: 220,
+        elevationM: 27,
+        path: COURSE_DATA['추천 코스'].path,
+      },
+      {
+        id: 'rec-2',
+        date: '2026-08-12 10:15',
+        courseName: '학의천 평지 쾌속선 (쌍개울~인덕원교)',
+        distanceKm: 4.5,
+        durationMinutes: 20,
+        avgSpeedKmh: 21.0,
+        maxSpeedKmh: 29.5,
+        calories: 175,
+        elevationM: 20,
+        path: COURSE_DATA['평지 중심'].path,
+      },
+    ];
+  });
+
+  const handleAddRecord = (newRec: RidingRecord) => {
+    setRecords((prev) => {
+      const updated = [newRec, ...prev];
+      try {
+        localStorage.setItem('anyang_riding_records', JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
+  };
+
+  const handleClearRecords = () => {
+    setRecords([]);
+    try {
+      localStorage.removeItem('anyang_riding_records');
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleDeleteRecord = (id: string) => {
+    setRecords((prev) => {
+      const updated = prev.filter((r) => r.id !== id);
+      try {
+        localStorage.setItem('anyang_riding_records', JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
+  };
+
+  const handleSelectRecordRoute = (rec: RidingRecord) => {
+    const matched = Object.values(COURSE_DATA).find((c) => c.name === rec.courseName) || COURSE_DATA['추천 코스'];
+    setSelectedCourse(matched);
+    setActiveFilter(matched.tag);
+    setAppState('courseSelected');
+    setCurrentTab('home');
+    setIsBottomSheetOpen(true);
+  };
 
   const handleAddReport = (newRep: CommunityReport) => {
     const fallbackPoint = riderPosition || (selectedCourse.path[0]
@@ -772,8 +510,6 @@ export default function App() {
           ...reroutedCourse,
           description: `${reroutedCourse.description} ${report.categoryName} 제보 구간을 피해 실제 자전거도로로 재탐색한 경로입니다.`,
         });
-        setRemainingPath(reroutedCourse.path);
-        setPassedPath([]);
       })
       .catch((error) => console.warn('Report avoidance route failed:', error));
   };
@@ -796,10 +532,11 @@ export default function App() {
 
   // Panel Collapsible / Expandable (Toggle) states
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(true);
-  const [isRidingSheetExpanded, setIsRidingSheetExpanded] = useState(false); // Navigation Info Sheet default: collapsed
 
   // Rider position
   const [riderPosition, setRiderPosition] = useState<{ lat: number; lng: number } | null>(null);
+  const [panToTrigger, setPanToTrigger] = useState(0);
+  const [isGpsActive, setIsGpsActive] = useState(true);
 
   useEffect(() => {
     if (appState === 'idle' || !riderPosition || routeWarning) return;
@@ -823,11 +560,12 @@ export default function App() {
   // Resolve source addresses to real map coordinates once, then reuse them on later visits.
   useEffect(() => {
     let cancelled = false;
-    const cacheKey = 'anyang-facility-coordinates-v12-kakao-geocoded-exact';
+    const cacheKey = 'anyang-facility-coordinates-v13-exact-bike-racks';
     const targets = ANYANG_FACILITIES.filter(isGeocodedFacility);
     let cached: Record<string, Coordinates> = {};
 
     try {
+      localStorage.removeItem('anyang-facility-coordinates-v12-kakao-geocoded-exact');
       cached = JSON.parse(localStorage.getItem(cacheKey) || '{}') as Record<string, Coordinates>;
     } catch {
       cached = {};
@@ -847,13 +585,12 @@ export default function App() {
               };
             })()
           : {}),
-        lat: facility.category === 'repair' || facility.category === 'water' || facility.facilityType === '공기주입기' ? facility.lat : (coordinates[facility.id]?.lat ?? facility.lat),
-        lng: facility.category === 'repair' || facility.category === 'water' || facility.facilityType === '공기주입기' ? facility.lng : (coordinates[facility.id]?.lng ?? facility.lng),
+        lat: facility.lat || (coordinates[facility.id]?.lat ?? facility.lat),
+        lng: facility.lng || (coordinates[facility.id]?.lng ?? facility.lng),
       })));
     };
 
     applyCoordinates(cached);
-    // Rebuild coordinates after changing the source dataset or geocoding strategy.
     const pendingFacilities = targets.filter((facility) => !cached[facility.id]);
     if (pendingFacilities.length === 0) return () => { cancelled = true; };
 
@@ -876,7 +613,7 @@ export default function App() {
           try {
             localStorage.setItem(cacheKey, JSON.stringify(resolved));
           } catch {
-            // Coordinate caching is optional and must not block map rendering.
+            // ignore
           }
           applyCoordinates(resolved);
         }
@@ -887,55 +624,6 @@ export default function App() {
     void Promise.all(Array.from({ length: 4 }, () => worker()));
     return () => { cancelled = true; };
   }, []);
-
-  // Real-time navigation & 1st-person tracking states
-  const [heading, setHeading] = useState(0);
-  const [isHeadingLocked, setIsHeadingLocked] = useState(true);
-  const [passedPath, setPassedPath] = useState<[number, number][]>([]);
-  const [remainingPath, setRemainingPath] = useState<[number, number][]>([]);
-  const [isGpsActive, setIsGpsActive] = useState(true);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [navMetrics, setNavMetrics] = useState<{
-    currentStep?: NavStep;
-    nextStep?: NavStep;
-    distanceToNextStepMeter: number;
-    totalRemainingDistanceKm: number;
-    remainingMinutes: number;
-    currentSpeedKmh: number;
-  }>({
-    distanceToNextStepMeter: 300,
-    totalRemainingDistanceKm: 5.8,
-    remainingMinutes: 25,
-    currentSpeedKmh: 18.5,
-  });
-
-  // Riding history records
-  const [records, setRecords] = useState<RidingRecord[]>([
-    {
-      id: 'rec-1',
-      date: '2026-08-14 18:30',
-      courseName: '안양천-학의천 쌍개울 힐링 순환 코스',
-      distanceKm: 5.8,
-      durationMinutes: 25,
-      avgSpeedKmh: 19.5,
-      maxSpeedKmh: 28.0,
-      calories: 220,
-      elevationM: 27,
-      path: COURSE_DATA['추천 코스'].path,
-    },
-    {
-      id: 'rec-2',
-      date: '2026-08-12 10:15',
-      courseName: '학의천 평지 쾌속선 (쌍개울~인덕원교)',
-      distanceKm: 4.5,
-      durationMinutes: 20,
-      avgSpeedKmh: 21.0,
-      maxSpeedKmh: 29.5,
-      calories: 175,
-      elevationM: 20,
-      path: COURSE_DATA['평지 중심'].path,
-    },
-  ]);
 
   // User preferences with localStorage persistence
   const [preferences, setPreferences] = useState<UserPreferences>(() => {
@@ -992,6 +680,7 @@ export default function App() {
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           setRiderPosition({ lat, lng });
+          setMapCenter({ lat, lng });
 
           try {
             const address = await coordToAddress(lat, lng);
@@ -1009,6 +698,7 @@ export default function App() {
             lat: ANYANG_CENTER.lat,
             lng: ANYANG_CENTER.lng,
           });
+          setMapCenter(ANYANG_CENTER);
           setOrigin('내 현재 위치');
         },
         { enableHighAccuracy: true, timeout: 7000 }
@@ -1053,78 +743,6 @@ export default function App() {
     }
   };
 
-  /* Start Riding action */
-  const handleStartRiding = () => {
-    setAppState('riding');
-    setCurrentTab('home');
-    setIsRidingSheetExpanded(false);
-    setPassedPath([]);
-    setRemainingPath(selectedCourse.path);
-    setIsHeadingLocked(true);
-    
-    // Initialize heading to initial course segment direction
-    if (selectedCourse.path && selectedCourse.path.length > 1) {
-      const initBearing = getBearing(
-        selectedCourse.path[0][0],
-        selectedCourse.path[0][1],
-        selectedCourse.path[1][0],
-        selectedCourse.path[1][1]
-      );
-      setHeading(initBearing);
-      setRiderPosition({ lat: selectedCourse.path[0][0], lng: selectedCourse.path[0][1] });
-    } else {
-      setHeading(0);
-    }
-
-    setNavMetrics({
-      currentStep: selectedCourse.navSteps?.[0],
-      nextStep: selectedCourse.navSteps?.[1],
-      distanceToNextStepMeter: selectedCourse.navSteps?.[0]?.distanceMeter || 300,
-      totalRemainingDistanceKm: selectedCourse.distanceKm,
-      remainingMinutes: selectedCourse.timeMinutes,
-      currentSpeedKmh: 18.5,
-    });
-  };
-
-  /* Stop / Finish Riding */
-  const handleStopRiding = () => {
-    setAppState('courseSelected');
-  };
-
-  const handleFinishRideComplete = (stats: {
-    courseName: string;
-    distanceKm: number;
-    durationMinutes: number;
-    avgSpeedKmh: number;
-    maxSpeedKmh: number;
-    calories: number;
-    elevationM: number;
-  }) => {
-    const newRecord: RidingRecord = {
-      id: `rec-${Date.now()}`,
-      date: new Date().toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      courseName: stats.courseName,
-      distanceKm: stats.distanceKm,
-      durationMinutes: stats.durationMinutes,
-      avgSpeedKmh: stats.avgSpeedKmh,
-      maxSpeedKmh: stats.maxSpeedKmh,
-      calories: stats.calories,
-      elevationM: stats.elevationM,
-      path: selectedCourse.path,
-    };
-
-    setRecords((prev) => [newRecord, ...prev]);
-    setFinishedRideRecord(newRecord);
-    setAppState('idle');
-    setIsRideSummaryOpen(true);
-  };
-
   /* POI Category Toggle */
   const handleTogglePoiFilter = (category: POICategory) => {
     setActivePoiFilters((prev) =>
@@ -1134,6 +752,12 @@ export default function App() {
 
   /* Find My Location (GPS & Troubleshoot) */
   const handleFindMyLocation = () => {
+    // 1. 이미 내 위치를 알고 있다면 지도를 즉시 그 위치로 이동
+    if (riderPosition) {
+      setMapCenter({ lat: riderPosition.lat, lng: riderPosition.lng });
+      setPanToTrigger((prev) => prev + 1);
+    }
+
     if (!navigator.geolocation) {
       setGpsStatus('unavailable');
       setGpsMessage('이 브라우저는 위치 서비스를 지원하지 않습니다.');
@@ -1153,6 +777,8 @@ export default function App() {
           lng: pos.coords.longitude,
         };
         setRiderPosition(coords);
+        setMapCenter(coords);
+        setPanToTrigger((prev) => prev + 1);
         try {
           const addr = await coordToAddress(coords.lat, coords.lng);
           if (addr) setOrigin(addr);
@@ -1181,6 +807,8 @@ export default function App() {
   const handleSelectGpsPreset = (preset: GpsHubPreset) => {
     const coords = { lat: preset.lat, lng: preset.lng };
     setRiderPosition(coords);
+    setMapCenter(coords);
+    setPanToTrigger((prev) => prev + 1);
     setOrigin(preset.address || preset.name);
     setGpsStatus('active');
     setIsGpsActive(true);
@@ -1320,18 +948,10 @@ export default function App() {
   /* Select Facility on Map */
   const handleNavigateToFacility = (fac: Facility) => {
     setRiderPosition({ lat: fac.lat, lng: fac.lng });
+    setMapCenter({ lat: fac.lat, lng: fac.lng });
+    setPanToTrigger((prev) => prev + 1);
     setCurrentTab('home');
     setSelectedFacilityDetail(fac);
-  };
-
-  /* Select Record Route */
-  const handleSelectRecordRoute = (rec: RidingRecord) => {
-    const matched = Object.values(COURSE_DATA).find((c) => c.name === rec.courseName) || COURSE_DATA['추천 코스'];
-    setSelectedCourse(matched);
-    setActiveFilter(matched.tag);
-    setAppState('courseSelected');
-    setCurrentTab('home');
-    setIsBottomSheetOpen(true);
   };
 
   return (
@@ -1348,13 +968,11 @@ export default function App() {
         {/* ── Map Canvas (Always mounted in Home view) ── */}
         <div className={`relative flex-1 w-full ${currentTab === 'home' ? 'block' : 'hidden'}`}>
           <MapComponent
-            center={riderPosition || ANYANG_CENTER}
+            center={mapCenter}
+            panToTrigger={panToTrigger}
             routePath={undefined}
             passedPath={undefined}
             remainingPath={undefined}
-            heading={heading}
-            isHeadingLocked={isHeadingLocked}
-            onToggleHeadingLock={() => setIsHeadingLocked((prev) => !prev)}
             riderPosition={riderPosition}
             activePoiFilters={activePoiFilters}
             alwaysVisibleCategories={[]}
@@ -1365,6 +983,7 @@ export default function App() {
             onMapClick={(lat, lng) => {
               if (isMapPickMode) {
                 setRiderPosition({ lat, lng });
+                setMapCenter({ lat, lng });
                 coordToAddress(lat, lng).then((addr) => {
                   if (addr) setOrigin(addr);
                 });
@@ -1372,13 +991,11 @@ export default function App() {
                 setGpsStatus('active');
                 return;
               }
-              setReportCoordinates({ lat, lng });
-              setIsQuickReportOpen(true);
+              setSelectedFacilityDetail(null);
             }}
             onSelectRampPoint={handleSelectRampPoint}
             onOpenOfficialGuide={() => setIsOfficialGuideOpen(true)}
-            isRiding={appState === 'riding'}
-            isSheetExpanded={appState === 'riding' ? isRidingSheetExpanded : false}
+            onFindMyLocation={handleFindMyLocation}
           />
 
           {/* Map Pick Mode Notification Banner */}
@@ -1398,128 +1015,113 @@ export default function App() {
             </div>
           )}
 
-          {/* ── Top Turn-by-Turn Navigation HUD (Kakao/TMap style) ── */}
-          {appState === 'riding' && (
-            <NavigationHeader
-              currentStep={navMetrics.currentStep || selectedCourse.navSteps?.[0]}
-              nextStep={navMetrics.nextStep || selectedCourse.navSteps?.[1]}
-              distanceToNextStepMeter={navMetrics.distanceToNextStepMeter}
-              totalRemainingDistanceKm={navMetrics.totalRemainingDistanceKm}
-              remainingMinutes={navMetrics.remainingMinutes}
-              voiceEnabled={voiceEnabled}
-              onToggleVoice={() => setVoiceEnabled(!voiceEnabled)}
-              onStopRide={handleStopRiding}
-              isGpsActive={isGpsActive}
-              isHeadingLocked={isHeadingLocked}
-              onToggleHeadingLock={() => setIsHeadingLocked((prev) => !prev)}
-              onOpenQuickReport={() => setIsQuickReportOpen(true)}
-            />
-          )}
-
           {/* ── Top Utility Bar (Current location and quick access) ── */}
-          {appState !== 'riding' && (
-            <div className="absolute left-0 right-0 top-0 z-30 px-3 pt-3 pointer-events-none">
-              <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-2xl bg-white/95 p-2.5 shadow-xl backdrop-blur-xl border border-slate-200">
-                <div className="flex min-w-0 items-center gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0055FF] text-white shadow-xs">
-                    <Navigation size={15} className="rotate-45" fill="currentColor" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] font-bold text-slate-800">내 현재 위치</span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        실시간 GPS (±108m)
-                      </span>
-                    </div>
-                    <div className="truncate text-sm font-black text-slate-900 mt-0.5">
-                      {origin || '경기도 광명시 소하1동 소하로'}
-                    </div>
-                  </div>
+          <div className="absolute left-0 right-0 top-0 z-30 px-3 pt-3 pointer-events-none">
+            <div className="pointer-events-auto flex items-center justify-between gap-2 rounded-2xl bg-white/95 p-2.5 shadow-xl backdrop-blur-xl border border-slate-200">
+              <div
+                onClick={handleFindMyLocation}
+                className="flex min-w-0 items-center gap-2.5 cursor-pointer group select-none hover:opacity-85 transition-opacity"
+                title="클릭 시 내 현재 위치로 지도 이동"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0055FF] text-white shadow-xs group-hover:scale-105 transition-transform">
+                  <MapPin size={16} />
                 </div>
-
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => setIsGpsTroubleshootOpen(true)}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50/80 border border-blue-200 text-[#0055FF] hover:bg-blue-100 active:scale-95 transition-all"
-                    title="실시간 GPS 거점 보정"
-                  >
-                    <Radio size={16} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsHeadingLocked((prev) => !prev)}
-                    className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all ${
-                      isHeadingLocked
-                        ? 'bg-[#0055FF] text-white border-[#0055FF]'
-                        : 'bg-blue-50/80 border-blue-200 text-[#0055FF] hover:bg-blue-100'
-                    }`}
-                    title="지도 방향/나침반 잠금"
-                  >
-                    <Compass size={16} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsQuickReportOpen(true)}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 active:scale-95 transition-all"
-                    title="장애물/위험 신고"
-                  >
-                    <ShieldAlert size={16} />
-                  </button>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-bold text-slate-800">내 현재 위치</span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 text-[9px] font-bold text-emerald-700">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      실시간 GPS
+                    </span>
+                  </div>
+                  <div className="truncate text-sm font-black text-slate-900 mt-0.5 group-hover:text-[#0055FF] transition-colors">
+                    {origin || '경기도 안양시 안양천'}
+                  </div>
                 </div>
               </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleFindMyLocation}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50/80 border border-blue-200 text-[#0055FF] hover:bg-blue-100 active:scale-95 transition-all"
+                  title="내 위치로 지도 이동 (GPS)"
+                  aria-label="내 위치로 지도 이동"
+                >
+                  <Crosshair size={17} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsGpsTroubleshootOpen(true)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-700 hover:bg-slate-100 active:scale-95 transition-all"
+                  title="실시간 GPS 거점 보정"
+                  aria-label="실시간 GPS 거점 보정"
+                >
+                  <Radio size={16} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsQuickReportOpen(true)}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 active:scale-95 transition-all"
+                  title="장애물/위험 제보"
+                  aria-label="장애물/위험 제보"
+                >
+                  <ShieldAlert size={16} />
+                </button>
+              </div>
             </div>
-          )}
 
-          {/* ── GPS FAB Button (내 위치 조준경) ── */}
-          {appState !== 'riding' && (
-            <button
-              type="button"
-              onClick={handleFindMyLocation}
-              className={`absolute right-3.5 z-30 flex h-11 w-11 min-w-[44px] min-h-[44px] items-center justify-center rounded-2xl bg-white border border-slate-200 text-[#0055FF] shadow-xl hover:bg-slate-50 active:scale-95 transition-all duration-300 ${
-                isBottomSheetOpen ? 'bottom-[340px]' : 'bottom-[75px]'
-              }`}
-              aria-label="내 위치 찾기 (GPS)"
-              title="내 현재 위치로 자동 줌 및 이동"
-            >
-              <Crosshair size={20} />
-            </button>
-          )}
+            {/* Quick Map POI Filters Row */}
+            <div className="pointer-events-auto mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
+              {[
+                { id: 'toilet' as POICategory, label: '화장실 243', icon: '🚻' },
+                { id: 'repair' as POICategory, label: '공기주입기', icon: '🔧' },
+                { id: 'parking' as POICategory, label: '거치대', icon: '🚲' },
+                { id: 'water' as POICategory, label: '음수대', icon: '💧' },
+              ].map((poi) => {
+                const isActive = activePoiFilters.includes(poi.id);
+                return (
+                  <button
+                    key={poi.id}
+                    type="button"
+                    onClick={() => handleTogglePoiFilter(poi.id)}
+                    className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-md transition-all active:scale-95 border ${
+                      isActive
+                        ? 'bg-slate-900 text-white border-slate-900'
+                        : 'bg-white/95 text-slate-700 border-slate-200 hover:bg-white'
+                    }`}
+                  >
+                    <span>{poi.icon}</span>
+                    <span>{poi.label}</span>
+                    {isActive && <span className="ml-0.5 text-[9px] text-emerald-400 font-black">ON</span>}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          {/* ── Bottom Sheet (Idle / CourseSelected / Riding) ── */}
+          {/* ── AI Chatbot FAB Button (유저 맞춤 명소 추천) ── */}
+          <button
+            type="button"
+            onClick={() => setIsChatbotOpen(true)}
+            className={`absolute right-3.5 z-30 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#0055FF] via-indigo-600 to-blue-700 px-3.5 py-2.5 text-white shadow-xl hover:shadow-2xl border border-white/40 active:scale-95 transition-all duration-300 group ${
+              isBottomSheetOpen ? 'bottom-[340px]' : 'bottom-[75px]'
+            }`}
+            aria-label="AI 명소 추천 챗봇 열기"
+            title="AI 자전거 명소 맞춤 추천 챗봇"
+          >
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-white/20 text-amber-300 backdrop-blur-xs group-hover:rotate-12 transition-transform">
+              <Sparkles size={14} className="animate-pulse" />
+            </div>
+            <span className="text-xs font-black tracking-tight whitespace-nowrap">AI 챗봇</span>
+          </button>
+
+          {/* ── Bottom Sheet (안양시 명소 & 실시간 날씨 패널) ── */}
           <div className="absolute bottom-0 left-0 right-0 z-30 flex flex-col pointer-events-none">
             <div className="pointer-events-auto">
-              {appState === 'riding' ? (
-                /* Foldable Navigation Info Sheet (Slim mode by default) */
-                <NavigationInfoSheet
-                  course={selectedCourse}
-                  onStop={handleStopRiding}
-                  onFinishRide={handleFinishRideComplete}
-                  riderPosition={riderPosition}
-                  onRiderPositionChange={setRiderPosition}
-                  heading={heading}
-                  onHeadingChange={setHeading}
-                  isHeadingLocked={isHeadingLocked}
-                  onToggleHeadingLock={() => setIsHeadingLocked(!isHeadingLocked)}
-                  onPathUpdate={(passed, remaining) => {
-                    setPassedPath(passed);
-                    setRemainingPath(remaining);
-                  }}
-                  activePoiFilters={activePoiFilters}
-                  onTogglePoiFilter={handleTogglePoiFilter}
-                  voiceEnabled={voiceEnabled}
-                  onToggleVoice={() => setVoiceEnabled(!voiceEnabled)}
-                  isGpsActive={isGpsActive}
-                  onGpsActiveChange={setIsGpsActive}
-                  onNavMetricsChange={setNavMetrics}
-                  isExpanded={isRidingSheetExpanded}
-                  onExpandChange={setIsRidingSheetExpanded}
-                />
-              ) : (
-                <div className="rounded-t-[28px] bg-white/95 shadow-2xl border-t border-slate-200 backdrop-blur-2xl transition-all duration-300">
+              <div className="rounded-t-[28px] bg-white/95 shadow-2xl border-t border-slate-200 backdrop-blur-2xl transition-all duration-300">
                   {isBottomSheetOpen ? (
                     /* Expanded Sheet: 안양시 명소 & 실시간 날씨 패널 */
                     <>
@@ -1545,13 +1147,13 @@ export default function App() {
                         origin={origin}
                         weather={weather}
                         riderPosition={riderPosition}
-                        onOpenOfficialGuide={() => setIsOfficialGuideOpen(true)}
                         onOpenAttractionModal={() => setIsAttractionModalOpen(true)}
                         onOpenGpsModal={() => setIsGpsTroubleshootOpen(true)}
                         onSelectAttraction={(spot) => {
                           setSelectedAttraction(spot);
                           setIsAttractionModalOpen(true);
                         }}
+                        onOpenAiChatbot={() => setIsChatbotOpen(true)}
                         onNavigateToFacilitiesTab={() => setCurrentTab('facilities')}
                       />
                     </>
@@ -1595,20 +1197,11 @@ export default function App() {
                     </div>
                   )}
                 </div>
-          )}
-        </div>
-      </div>
-    </div>
+              </div>
+            </div>
+          </div>
 
         {/* ── Other Navigation Tabs ── */}
-        {currentTab === 'record' && (
-          <RecordTab
-            records={records}
-            onSelectRecordRoute={handleSelectRecordRoute}
-            onClearRecords={() => setRecords([])}
-          />
-        )}
-
         {currentTab === 'facilities' && (
           <FacilitiesTab
             facilities={mappedFacilities}
@@ -1619,6 +1212,16 @@ export default function App() {
             onNavigateToFacility={(fac) => {
               handleNavigateToFacility(fac);
             }}
+          />
+        )}
+
+        {currentTab === 'record' && (
+          <RecordTab
+            records={records}
+            onAddRecord={handleAddRecord}
+            onSelectRecordRoute={handleSelectRecordRoute}
+            onClearRecords={handleClearRecords}
+            onDeleteRecord={handleDeleteRecord}
           />
         )}
 
@@ -1633,10 +1236,8 @@ export default function App() {
           />
         )}
 
-        {/* ── Bottom Navigation Bar (Hidden during live ride HUD) ── */}
-        {appState !== 'riding' && (
-          <BottomNav active={currentTab} onChangeTab={(t) => setCurrentTab(t)} />
-        )}
+        {/* ── Bottom Navigation Bar ── */}
+        <BottomNav active={currentTab} onChangeTab={(t) => setCurrentTab(t)} />
 
         {/* ── Modals ── */}
         <QuickReportModal
@@ -1705,25 +1306,32 @@ export default function App() {
           onNavigateTo={handleNavigateToFacility}
         />
 
-        <RideSummaryModal
-          record={finishedRideRecord}
-          isOpen={isRideSummaryOpen}
-          onClose={() => setIsRideSummaryOpen(false)}
-          onViewRecords={() => {
-            setIsRideSummaryOpen(false);
-            setCurrentTab('record');
-          }}
-        />
-
         <AttractionDetailModal
           spot={selectedAttraction}
           isOpen={isAttractionModalOpen}
           onClose={() => setIsAttractionModalOpen(false)}
           onFocusOnMap={(spot) => {
             setRiderPosition({ lat: spot.lat, lng: spot.lng });
+            setMapCenter({ lat: spot.lat, lng: spot.lng });
             setIsAttractionModalOpen(false);
           }}
           weather={weather}
+          riderPosition={riderPosition}
+        />
+
+        <AiChatbotModal
+          isOpen={isChatbotOpen}
+          onClose={() => setIsChatbotOpen(false)}
+          onSelectAttraction={(spot) => {
+            setSelectedAttraction(spot);
+            setIsAttractionModalOpen(true);
+          }}
+          onFocusOnMap={(spot) => {
+            setRiderPosition({ lat: spot.lat, lng: spot.lng });
+            setMapCenter({ lat: spot.lat, lng: spot.lng });
+            setIsChatbotOpen(false);
+          }}
+          riderPosition={riderPosition}
         />
 
         <GpsTroubleshootModal
