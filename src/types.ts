@@ -17,7 +17,7 @@ export interface RouteSearchParams {
   preferredFilter?: FilterCategory;
 }
 
-export type POICategory = 'water' | 'repair' | 'parking' | 'toilet';
+export type POICategory = 'water' | 'repair' | 'parking' | 'toilet' | 'restroom';
 
 export interface LatLng {
   lat: number;
@@ -81,11 +81,13 @@ export interface Facility {
   name: string;
   category: POICategory;
   categoryName: string;
-  facilityType?: '음수대' | '수리시설' | '공기주입기' | '자전거보관소' | '화장실';
+  facilityType?: '음수대' | '수리시설' | '공기주입기' | '자전거보관소' | '화장실' | '공중화장실' | '간이화장실' | string;
   address: string;
   roadAddress?: string;
-  lat: number;
-  lng: number;
+  lat?: number | null;
+  lng?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
   original?: string;
   searchKeyword?: string;
   detail?: string;

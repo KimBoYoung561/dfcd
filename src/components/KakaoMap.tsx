@@ -35,18 +35,21 @@ const POI_ICONS: Record<POICategory, { emoji: string; color: string; label: stri
   repair: { emoji: '🔧', color: '#059669', label: '수리/공기주입기' },
   parking: { emoji: '🚲', color: '#4f46e5', label: '자전거 거치대' },
   toilet: { emoji: '🚻', color: '#ea580c', label: '공중화장실' },
+  restroom: { emoji: '🚻', color: '#ea580c', label: '공중화장실' },
 };
 
 function getVisualMarkerPosition(facility: Facility, facilities: Facility[]) {
-  const sameLocation = facilities.filter((item) => item.lat === facility.lat && item.lng === facility.lng);
-  if (sameLocation.length <= 1) return { lat: facility.lat, lng: facility.lng };
+  const fLat = facility.lat ?? facility.latitude ?? 37.3943;
+  const fLng = facility.lng ?? facility.longitude ?? 126.9568;
+  const sameLocation = facilities.filter((item) => (item.lat ?? item.latitude) === fLat && (item.lng ?? item.longitude) === fLng);
+  if (sameLocation.length <= 1) return { lat: fLat, lng: fLng };
 
   const occurrence = sameLocation.indexOf(facility);
   const angle = (occurrence / sameLocation.length) * Math.PI * 2;
   const radius = 0.000045;
   return {
-    lat: facility.lat + Math.sin(angle) * radius,
-    lng: facility.lng + Math.cos(angle) * radius,
+    lat: fLat + Math.sin(angle) * radius,
+    lng: fLng + Math.cos(angle) * radius,
   };
 }
 
@@ -143,7 +146,7 @@ export default function KakaoMap({
         const kakaoMaps = await loadKakaoMapsServices();
         if (isCancelled || !containerRef.current) return;
 
-        if (kakaoMaps && (window as any).kakao?.maps) {
+        if (kakaoMaps && (window as any).kakao?.maps?.Map) {
           const kakao = (window as any).kakao;
 
           containerRef.current.innerHTML = '';
@@ -166,7 +169,13 @@ export default function KakaoMap({
           setIsMapLoaded(true);
           return;
         } else {
-          throw new Error('카카오 지도 객체를 초기화할 수 없습니다.');
+          // If not ready yet on first tick, retry once after short delay before showing error
+          setTimeout(() => {
+            if (!isCancelled && !isMapLoaded) {
+              setInitAttempts((prev) => prev + 1);
+            }
+          }, 1500);
+          setLoadError('카카오 지도 객체를 초기화하는 중입니다...');
         }
       } catch (err: any) {
         if (!isCancelled) {

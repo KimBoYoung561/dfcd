@@ -8,25 +8,43 @@ export function loadKakaoMapsServices(): Promise<any> {
   if (kakaoLoadPromise) return kakaoLoadPromise;
 
   kakaoLoadPromise = new Promise((resolve) => {
-    // If kakao and services are already loaded
-    if ((window as any).kakao?.maps?.services) {
+    // 1. If kakao and services are already fully loaded
+    if ((window as any).kakao?.maps?.Map && (window as any).kakao?.maps?.services) {
       resolve((window as any).kakao.maps);
       return;
     }
 
-    if ((window as any).kakao?.maps?.load) {
-      (window as any).kakao.maps.load(() => {
-        resolve((window as any).kakao.maps);
-      });
-      return;
-    }
+    // Helper to resolve when Map constructor is ready
+    const handleSdkLoaded = () => {
+      const kakao = (window as any).kakao;
+      if (kakao?.maps?.load) {
+        try {
+          kakao.maps.load(() => {
+            if (kakao?.maps?.Map) {
+              resolve(kakao.maps);
+            } else {
+              resolve(kakao.maps || null);
+            }
+          });
+          return true;
+        } catch {
+          // fall-through
+        }
+      } else if (kakao?.maps?.Map) {
+        resolve(kakao.maps);
+        return true;
+      }
+      return false;
+    };
 
-    // Check if script element already exists
+    if (handleSdkLoaded()) return;
+
+    // 2. Check if script element already exists
     let script = document.getElementById('kakao-map-sdk') as HTMLScriptElement;
     if (!script) {
       script = document.createElement('script');
       script.id = 'kakao-map-sdk';
-      // Load via local proxy first; fallback to direct DAPI if needed
+      // Load via local proxy (rewritten by server)
       script.src = `/kakao-sdk.js?appkey=${KAKAO_API_KEY}&libraries=services,clusterer&autoload=false`;
       script.async = true;
       script.referrerPolicy = 'no-referrer';
@@ -34,54 +52,38 @@ export function loadKakaoMapsServices(): Promise<any> {
     }
 
     script.onload = () => {
-      if ((window as any).kakao?.maps?.load) {
-        (window as any).kakao.maps.load(() => {
-          resolve((window as any).kakao.maps);
-        });
-      } else if ((window as any).kakao?.maps) {
-        resolve((window as any).kakao.maps);
-      } else {
-        resolve(null);
-      }
+      handleSdkLoaded();
     };
 
     script.onerror = () => {
-      // Fallback: try direct Kakao DAPI URL if proxy wasn't reached
+      console.warn('Proxy kakao-sdk.js failed to load, attempting direct DAPI fallback');
       const fallbackScript = document.createElement('script');
       fallbackScript.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&libraries=services,clusterer&autoload=false`;
       fallbackScript.async = true;
       fallbackScript.referrerPolicy = 'no-referrer';
       fallbackScript.onload = () => {
-        if ((window as any).kakao?.maps?.load) {
-          (window as any).kakao.maps.load(() => {
-            resolve((window as any).kakao.maps);
-          });
-        } else {
-          resolve((window as any).kakao?.maps || null);
-        }
+        handleSdkLoaded();
       };
-      fallbackScript.onerror = () => resolve(null);
+      fallbackScript.onerror = () => {
+        kakaoLoadPromise = null;
+        resolve(null);
+      };
       document.head.appendChild(fallbackScript);
     };
 
-    // Polling check for kakao.maps.load
+    // 3. Polling check for kakao.maps.load or kakao.maps.Map
     let attempts = 0;
+    const maxAttempts = 60; // 6 seconds total
     const interval = setInterval(() => {
       attempts++;
-      if ((window as any).kakao?.maps?.load) {
+      if (handleSdkLoaded()) {
         clearInterval(interval);
-        try {
-          (window as any).kakao.maps.load(() => {
-            resolve((window as any).kakao.maps);
-          });
-        } catch {
-          resolve(null);
-        }
-      } else if ((window as any).kakao?.maps) {
+        return;
+      }
+      if (attempts >= maxAttempts) {
         clearInterval(interval);
-        resolve((window as any).kakao.maps);
-      } else if (attempts >= 40) {
-        clearInterval(interval);
+        // Reset promise cache so retry can re-attempt
+        kakaoLoadPromise = null;
         resolve(null);
       }
     }, 100);

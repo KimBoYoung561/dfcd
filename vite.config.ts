@@ -14,11 +14,18 @@ function kakaoProxyPlugin(): Plugin {
             const targetUrl = `https://dapi.kakao.com/v2/maps/sdk.js${parsedUrl.search}`;
             const upstreamRes = await fetch(targetUrl, {
               headers: {
-                'Referer': 'http://localhost:5173/',
-                'Origin': 'http://localhost:5173',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)',
+                'Accept': '*/*',
               },
             });
-            const scriptContent = await upstreamRes.text();
+            let scriptContent = await upstreamRes.text();
+            if (upstreamRes.status === 200) {
+              // Modify regex so Kakao SDK successfully finds /kakao-sdk.js in document.scripts
+              scriptContent = scriptContent.replace(
+                /if\(\/.*?\.test\(i\.src\)\)\{r=i\.src;break\}/,
+                'if(/(?:kakao-sdk\\.js|(?:beta-)?dapi\\.kakao\\.com\\/v2\\/maps\\/sdk\\.js)/.test(i.src)){r=i.src;break}'
+              );
+            }
             res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
             res.setHeader('Cache-Control', 'no-cache');
             res.statusCode = upstreamRes.status;
