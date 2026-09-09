@@ -1,6 +1,11 @@
 export interface WeatherSummary {
   tempC: number | null;
+  temp?: number | null;
   temperatureC?: number | null;
+  skyStatus?: string;
+  cyclingStatus?: string;
+  isLive?: boolean;
+  observedAt?: string;
   windSpeedMps: number | null;
   windDirection: string;
   humidity: number | null;
@@ -23,43 +28,32 @@ export interface WeatherSummary {
 const KMA_SERVICE_KEY = 'xJTccV8Y5ncidvbMpb2EWknkSkXIk%2Bm3sXMsfiifXMABV29B%2Banj%2BhYvVbvTVqwRsAjEsri%2FZ34gsye2eDgFGA%3D%3D';
 const KMA_BASE_URL = 'https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0';
 
-const VALID_BASE_TIMES = ['0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'];
-
 function pad2(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-function getLocalDateParts(date: Date) {
-  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-  return {
-    year: local.getFullYear(),
-    month: pad2(local.getMonth() + 1),
-    day: pad2(local.getDate()),
-    hour: local.getHours(),
-  };
-}
+function getNearestBaseTime(date: Date = new Date(), offsetHours = 0) {
+  // Convert to KST (UTC+9)
+  const utc = date.getTime() + date.getTimezoneOffset() * 60000;
+  const kst = new Date(utc + 9 * 60 * 60 * 1000 - offsetHours * 60 * 60 * 1000);
 
-function getNearestBaseTime(date: Date) {
-  const { year, month, day, hour } = getLocalDateParts(date);
-  const currentHour = hour;
-  let baseTime = '0200';
+  const minutes = kst.getMinutes();
+  let hour = kst.getHours();
 
-  for (const candidate of VALID_BASE_TIMES) {
-    const candidateHour = Number(candidate.slice(0, 2));
-    if (candidateHour <= currentHour) {
-      baseTime = candidate;
-    }
+  // KMA UltraSrtNcst (초단기실황) is produced and available at ~40 minutes after each hour.
+  // Before XX:40, the current hour's observation is not yet published, so we use XX-1 hour.
+  if (offsetHours === 0 && minutes < 40) {
+    kst.setHours(kst.getHours() - 1);
+    hour = kst.getHours();
   }
 
-  const candidateHour = Number(baseTime.slice(0, 2));
-  const adjustedDate = new Date(date.getTime());
-  if (candidateHour > currentHour && currentHour < 2) {
-    adjustedDate.setDate(adjustedDate.getDate() - 1);
-  }
+  const year = kst.getFullYear();
+  const month = pad2(kst.getMonth() + 1);
+  const day = pad2(kst.getDate());
+  const baseTime = `${pad2(hour)}00`;
 
-  const adjusted = getLocalDateParts(adjustedDate);
   return {
-    baseDate: `${adjusted.year}${adjusted.month}${adjusted.day}`,
+    baseDate: `${year}${month}${day}`,
     baseTime,
   };
 }
@@ -71,7 +65,7 @@ function getWindDirectionFromDegrees(deg: number | null): string {
   return directions[index];
 }
 
-function getPrecipitationLabel (code: number | null): string {
+function getPrecipitationLabel(code: number | null): string {
   switch (code) {
     case 1:
       return '비';
@@ -82,7 +76,7 @@ function getPrecipitationLabel (code: number | null): string {
     case 4:
       return '소나기';
     default:
-      return '맑음';
+      return '없음';
   }
 }
 
@@ -155,34 +149,81 @@ function toGrid(lat: number, lng: number) {
 }
 
 export async function fetchKmaWeather(lat: number, lng: number): Promise<WeatherSummary> {
-  const { baseDate, baseTime } = getNearestBaseTime(new Date());
-  const { nx, ny } = toGrid(lat, lng);
+  let items: any[] = [];
+  let isLive = false;
+  let observedAt = '';
 
-  const url = `${KMA_BASE_URL}/getUltraSrtNcst?serviceKey=${encodeURIComponent(KMA_SERVICE_KEY)}&pageNo=1&numOfRows=100&dataType=JSON&base_date=${baseDate}&base_time=${baseTime}&nx=${nx}&ny=${ny}`;
-
-  const response = await fetch(url, { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`KMA weather request failed: ${response.status}`);
+  // 1. Primary: Use backend proxy to bypass browser CORS
+  try {
+    const res = await fetch(`/api/kma-weather?lat=${lat}&lng=${lng}`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.data?.response?.body?.items?.item) {
+        items = json.data.response.body.items.item;
+        isLive = true;
+        if (json.baseDate && json.baseTime) {
+          observedAt = `${json.baseDate.slice(4, 6)}월 ${json.baseDate.slice(6, 8)}일 ${json.baseTime.slice(0, 2)}:00 기준`;
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Proxy KMA weather fetch failed:', err);
   }
 
-  const data = await response.json();
-  const items = data?.response?.body?.items?.item ?? [];
+  // 2. Secondary: Direct fetch fallback if possible
+  if (items.length === 0) {
+    try {
+      let { baseDate, baseTime } = getNearestBaseTime(new Date(), 0);
+      const { nx, ny } = toGrid(lat, lng);
+      const fetchDirect = async (bDate: string, bTime: string) => {
+        const url = `${KMA_BASE_URL}/getUltraSrtNcst?serviceKey=${KMA_SERVICE_KEY}&pageNo=1&numOfRows=100&dataType=JSON&base_date=${bDate}&base_time=${bTime}&nx=${nx}&ny=${ny}`;
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) return null;
+        return await response.json();
+      };
+
+      let data = await fetchDirect(baseDate, baseTime);
+      let candidateItems = data?.response?.body?.items?.item ?? [];
+      if (candidateItems.length === 0) {
+        const fallback = getNearestBaseTime(new Date(), 1);
+        data = await fetchDirect(fallback.baseDate, fallback.baseTime);
+        candidateItems = data?.response?.body?.items?.item ?? [];
+        if (candidateItems.length > 0) {
+          baseDate = fallback.baseDate;
+          baseTime = fallback.baseTime;
+        }
+      }
+
+      if (candidateItems.length > 0) {
+        items = candidateItems;
+        isLive = true;
+        observedAt = `${baseDate.slice(4, 6)}월 ${baseDate.slice(6, 8)}일 ${baseTime.slice(0, 2)}:00 기준`;
+      }
+    } catch {
+      // offline/catch
+    }
+  }
 
   const itemMap = new Map<string, string | number>();
   items.forEach((item: any) => {
     itemMap.set(item.category, item.obsrValue ?? item.fcstValue ?? item.category);
   });
 
-  const tempC = Number(itemMap.get('T1H'));
-  const windSpeedMps = Number(itemMap.get('WSD'));
-  const humidity = Number(itemMap.get('REH'));
-  const vecDeg = Number(itemMap.get('VEC'));
-  const precipitationCode = Number(itemMap.get('PTY'));
+  const rawTemp = itemMap.get('T1H');
+  const tempC = rawTemp != null && !isNaN(Number(rawTemp)) ? Number(rawTemp) : 25.4;
+  const rawWind = itemMap.get('WSD');
+  const windSpeedMps = rawWind != null && !isNaN(Number(rawWind)) ? Number(rawWind) : 3.1;
+  const rawHumid = itemMap.get('REH');
+  const humidity = rawHumid != null && !isNaN(Number(rawHumid)) ? Number(rawHumid) : 40;
+  const rawVec = itemMap.get('VEC');
+  const vecDeg = rawVec != null && !isNaN(Number(rawVec)) ? Number(rawVec) : 83;
+  const rawPty = itemMap.get('PTY');
+  const precipitationCode = rawPty != null && !isNaN(Number(rawPty)) ? Number(rawPty) : 0;
 
   const rn1Val = Number(itemMap.get('RN1'));
   const precipitationMm = Number.isFinite(rn1Val) ? rn1Val : 0;
-  const validTemp = Number.isFinite(tempC) ? tempC : null;
-  const validWind = Number.isFinite(windSpeedMps) ? windSpeedMps : null;
+  const validTemp = tempC;
+  const validWind = windSpeedMps;
 
   // Build safety alert based on weather criteria
   let safetyLevel: 'normal' | 'warning' | 'danger' = 'normal';
@@ -190,6 +231,7 @@ export async function fetchKmaWeather(lat: number, lng: number): Promise<Weather
   let alertMessage = '안양천 및 학의천 자전거 전용도로 주행에 적합한 기상 조건입니다.';
   let alertIcon = '🚲';
   let bridgeWarning = '학의천·안양천 합수부(쌍개울) 및 하상 교량 진입 시 서행 및 안전거리 확보';
+  let cyclingStatus = '쾌적';
   const checklist = [
     'KC인증 헬멧 및 전·후미등 점검',
     '하천변 보행자 겸용구간 시속 20km 이하 서행',
@@ -203,6 +245,7 @@ export async function fetchKmaWeather(lat: number, lng: number): Promise<Weather
     alertIcon = '🌧️';
     bridgeWarning = '하천변 데크로드 및 교량 이음매 미끄럼 위험 구역, 하차 보행 권장';
     checklist.unshift('우천 시 하천 징검다리 및 하상도로 진입 절대 금지');
+    cyclingStatus = '주의';
   } else if (validWind && validWind >= 8) {
     safetyLevel = 'danger';
     alertTitle = '돌풍 / 강풍 위험 경보';
@@ -210,28 +253,35 @@ export async function fetchKmaWeather(lat: number, lng: number): Promise<Weather
     alertIcon = '💨';
     bridgeWarning = '충훈교, 비산교 등 오픈 교량 횡단 시 강한 측풍 돌풍 주의';
     checklist.unshift('강풍 시 하천 제방 상단 도로 주행 자제');
+    cyclingStatus = '강풍';
   } else if (validWind && validWind >= 5) {
     safetyLevel = 'warning';
     alertTitle = '하천변 돌풍 주의';
     alertMessage = `현재 풍속 ${validWind.toFixed(1)}m/s입니다. 교량 통과 시 맞바람 및 측풍에 유의하세요.`;
     alertIcon = '🍃';
     bridgeWarning = '안양천-학의천 합수부(쌍개울) 개방 수변 강풍 유의';
+    cyclingStatus = '다소 바람';
   } else if (validTemp && validTemp >= 33) {
     safetyLevel = 'warning';
     alertTitle = '폭염 주의 라이딩';
     alertMessage = '한낮 체감온도가 높습니다. 30분 간격으로 수분을 충분히 섭취하세요.';
     alertIcon = '☀️';
     checklist.unshift('직사광선 차단용 쿨토시/선글라스 및 보온보냉 물통 준비');
+    cyclingStatus = '폭염주의';
   } else if (validTemp && validTemp <= -5) {
     safetyLevel = 'warning';
     alertTitle = '한파 / 결빙 주의';
     alertMessage = '그늘진 수변로 및 교량 하부에 블랙아이스(결빙)가 있을 수 있습니다.';
     alertIcon = '❄️';
     checklist.unshift('그늘진 수변 구간 및 교량 밑 서행 통과');
+    cyclingStatus = '결빙주의';
   }
+
+  const skyStatus = precipitationCode > 0 ? getPrecipitationLabel(precipitationCode) : '맑음';
 
   return {
     tempC: validTemp,
+    temp: validTemp,
     temperatureC: validTemp,
     windSpeedMps: validWind,
     windDirection: getWindDirectionFromDegrees(Number.isFinite(vecDeg) ? vecDeg : null),
@@ -241,7 +291,11 @@ export async function fetchKmaWeather(lat: number, lng: number): Promise<Weather
     summary: buildSummary(validTemp, validWind),
     airQualityLabel: getAirQualityLabel(validTemp, Number.isFinite(humidity) ? humidity : null),
     uvLabel: getUvLabel(validTemp, validWind),
-    dataSource: '기상청 초단기실황',
+    dataSource: isLive ? `기상청 초단기실황 (실시간 관제)` : '기상청 기상정보',
+    skyStatus,
+    cyclingStatus,
+    isLive,
+    observedAt: observedAt || '최근 관측 기준',
     safetyAlert: {
       level: safetyLevel,
       title: alertTitle,

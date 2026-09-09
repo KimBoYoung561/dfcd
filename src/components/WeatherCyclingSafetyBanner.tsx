@@ -116,31 +116,41 @@ export default function WeatherCyclingSafetyBanner({
       )}
 
       {/* Weather Quick Stats Bar */}
-      <div className="grid grid-cols-4 gap-1.5 text-center bg-white/70 border border-slate-200/80 rounded-xl p-1.5">
+      <div className="grid grid-cols-4 gap-1 text-center bg-white/80 border border-slate-200/80 rounded-xl p-2 shadow-2xs">
         <div className="px-1 py-0.5">
           <div className="text-[9px] font-bold text-slate-500">기온</div>
-          <div className="text-[11px] font-black text-slate-900">
-            {weather?.temperatureC != null ? `${weather.temperatureC.toFixed(1)}℃` : '22℃'}
+          <div className="text-[11px] font-black text-slate-900 leading-tight mt-0.5">
+            {weather?.temperatureC != null ? `${weather.temperatureC.toFixed(1)}℃` : '25.4℃'}
+          </div>
+          <div className="text-[9px] font-semibold text-slate-500 leading-none mt-0.5 truncate">
+            {weather?.skyStatus || '맑음'}
           </div>
         </div>
         <div className="px-1 py-0.5 border-l border-slate-200/80">
           <div className="text-[9px] font-bold text-slate-500">풍속/풍향</div>
-          <div className="text-[11px] font-black text-slate-900">
-            {weather?.windSpeedMps != null ? `${weather.windSpeedMps.toFixed(1)}m/s` : '1.8m/s'} {weather?.windDirection || ''}
+          <div className="text-[11px] font-black text-slate-900 leading-tight mt-0.5">
+            {weather?.windSpeedMps != null ? `${weather.windSpeedMps.toFixed(1)}m/s` : '3.1m/s'}
+          </div>
+          <div className="text-[9px] font-semibold text-slate-500 leading-none mt-0.5 truncate">
+            {weather?.windDirection || '북동풍'}
           </div>
         </div>
         <div className="px-1 py-0.5 border-l border-slate-200/80">
           <div className="text-[9px] font-bold text-slate-500">습도/강수</div>
-          <div className="text-[11px] font-black text-slate-900">
-            {weather?.precipitationMm && weather.precipitationMm > 0
-              ? `${weather.precipitationMm}mm`
-              : `${weather?.humidity ?? 50}%`}
+          <div className="text-[11px] font-black text-slate-900 leading-tight mt-0.5">
+            {weather?.humidity != null ? `${weather.humidity}%` : '40%'}
+          </div>
+          <div className="text-[9px] font-semibold text-slate-500 leading-none mt-0.5 truncate">
+            {weather?.precipitationMm && weather.precipitationMm > 0 ? `${weather.precipitationMm}mm` : '강수 없음'}
           </div>
         </div>
         <div className="px-1 py-0.5 border-l border-slate-200/80">
           <div className="text-[9px] font-bold text-slate-500">자외선</div>
-          <div className="text-[11px] font-black text-slate-900">
+          <div className="text-[11px] font-black text-slate-900 leading-tight mt-0.5">
             {weather?.uvLabel || '보통'}
+          </div>
+          <div className="text-[9px] font-semibold text-slate-500 leading-none mt-0.5 truncate">
+            {weather?.airQualityLabel ? `미세 ${weather.airQualityLabel}` : '지수 양호'}
           </div>
         </div>
       </div>

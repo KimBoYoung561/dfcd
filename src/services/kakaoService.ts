@@ -8,11 +8,19 @@ export function loadKakaoMapsServices(): Promise<any> {
   if (kakaoLoadPromise) return kakaoLoadPromise;
 
   kakaoLoadPromise = new Promise((resolve) => {
-    // 1. If kakao and services are already fully loaded
-    if ((window as any).kakao?.maps?.Map && (window as any).kakao?.maps?.services) {
+    // 1. If kakao and Map constructor are already fully ready
+    if ((window as any).kakao?.maps?.Map) {
       resolve((window as any).kakao.maps);
       return;
     }
+
+    let isResolved = false;
+    const safeResolve = (val: any) => {
+      if (!isResolved) {
+        isResolved = true;
+        resolve(val);
+      }
+    };
 
     // Helper to resolve when Map constructor is ready
     const handleSdkLoaded = () => {
@@ -21,9 +29,9 @@ export function loadKakaoMapsServices(): Promise<any> {
         try {
           kakao.maps.load(() => {
             if (kakao?.maps?.Map) {
-              resolve(kakao.maps);
+              safeResolve(kakao.maps);
             } else {
-              resolve(kakao.maps || null);
+              safeResolve(kakao.maps || null);
             }
           });
           return true;
@@ -31,7 +39,7 @@ export function loadKakaoMapsServices(): Promise<any> {
           // fall-through
         }
       } else if (kakao?.maps?.Map) {
-        resolve(kakao.maps);
+        safeResolve(kakao.maps);
         return true;
       }
       return false;
@@ -39,25 +47,10 @@ export function loadKakaoMapsServices(): Promise<any> {
 
     if (handleSdkLoaded()) return;
 
-    // 2. Check if script element already exists
-    let script = document.getElementById('kakao-map-sdk') as HTMLScriptElement;
-    if (!script) {
-      script = document.createElement('script');
-      script.id = 'kakao-map-sdk';
-      // Load via local proxy (rewritten by server)
-      script.src = `/kakao-sdk.js?appkey=${KAKAO_API_KEY}&libraries=services,clusterer&autoload=false`;
-      script.async = true;
-      script.referrerPolicy = 'no-referrer';
-      document.head.appendChild(script);
-    }
-
-    script.onload = () => {
-      handleSdkLoaded();
-    };
-
-    script.onerror = () => {
-      console.warn('Proxy kakao-sdk.js failed to load, attempting direct DAPI fallback');
+    const loadFallbackDirect = () => {
+      if (document.getElementById('kakao-map-sdk-direct')) return;
       const fallbackScript = document.createElement('script');
+      fallbackScript.id = 'kakao-map-sdk-direct';
       fallbackScript.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_API_KEY}&libraries=services,clusterer&autoload=false`;
       fallbackScript.async = true;
       fallbackScript.referrerPolicy = 'no-referrer';
@@ -65,26 +58,53 @@ export function loadKakaoMapsServices(): Promise<any> {
         handleSdkLoaded();
       };
       fallbackScript.onerror = () => {
+        console.warn('Direct Kakao Maps SDK script error');
         kakaoLoadPromise = null;
-        resolve(null);
+        safeResolve(null);
       };
       document.head.appendChild(fallbackScript);
     };
 
+    // 2. Check existing script element or append new one
+    let script = document.getElementById('kakao-map-sdk') as HTMLScriptElement;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = 'kakao-map-sdk';
+      script.src = `/kakao-sdk.js?appkey=${KAKAO_API_KEY}&libraries=services,clusterer&autoload=false`;
+      script.async = true;
+      script.referrerPolicy = 'no-referrer';
+      document.head.appendChild(script);
+    }
+
+    script.addEventListener('load', () => {
+      handleSdkLoaded();
+    });
+
+    script.addEventListener('error', () => {
+      console.warn('Proxy /kakao-sdk.js failed, attempting direct DAPI fallback');
+      loadFallbackDirect();
+    });
+
     // 3. Polling check for kakao.maps.load or kakao.maps.Map
     let attempts = 0;
-    const maxAttempts = 60; // 6 seconds total
+    const maxAttempts = 50; // 5 seconds total
     const interval = setInterval(() => {
       attempts++;
       if (handleSdkLoaded()) {
         clearInterval(interval);
         return;
       }
+
+      // If after 2 seconds kakao is not yet defined, trigger direct fallback script
+      if (attempts === 20 && !(window as any).kakao?.maps?.load && !(window as any).kakao?.maps?.Map) {
+        loadFallbackDirect();
+      }
+
       if (attempts >= maxAttempts) {
         clearInterval(interval);
         // Reset promise cache so retry can re-attempt
         kakaoLoadPromise = null;
-        resolve(null);
+        safeResolve((window as any).kakao?.maps || null);
       }
     }, 100);
   });

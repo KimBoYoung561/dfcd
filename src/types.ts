@@ -151,6 +151,14 @@ export interface DisasterApiStatus {
   detailedReason?: string;
   lastCheckedAt: string;
   items: DisasterAlertItem[];
+  isKeyApproved?: boolean;
+  portalType?: string;
+  accountType?: string;
+  approvalStatus?: string;
+  registeredDate?: string;
+  registeredUrl?: string;
+  failoverActive?: boolean;
+  activeMonitoringMode?: 'realtime_direct' | 'realtime_failover_safety';
 }
 
 export interface CommunityReport {

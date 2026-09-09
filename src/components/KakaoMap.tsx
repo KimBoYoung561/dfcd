@@ -167,15 +167,23 @@ export default function KakaoMap({
           });
 
           setIsMapLoaded(true);
+          setTimeout(() => {
+            if (map?.relayout) {
+              map.relayout();
+            }
+          }, 150);
           return;
         } else {
-          // If not ready yet on first tick, retry once after short delay before showing error
-          setTimeout(() => {
-            if (!isCancelled && !isMapLoaded) {
-              setInitAttempts((prev) => prev + 1);
-            }
-          }, 1500);
-          setLoadError('카카오 지도 객체를 초기화하는 중입니다...');
+          // If not ready yet, retry smoothly before showing error
+          if (initAttempts < 4) {
+            setTimeout(() => {
+              if (!isCancelled && !isMapLoaded) {
+                setInitAttempts((prev) => prev + 1);
+              }
+            }, 1000);
+          } else {
+            setLoadError('카카오 지도 객체를 초기화하는 중입니다. 다시 시도 버튼을 눌러주세요.');
+          }
         }
       } catch (err: any) {
         if (!isCancelled) {

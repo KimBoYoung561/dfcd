@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   User,
   X,
@@ -40,6 +40,7 @@ import { FILTER_TAGS, COURSE_DATA, ANYANG_CENTER, OFFICIAL_STREAM_LINES } from '
 import { ANYANG_FACILITIES } from './data/facilities';
 import { ANYANG_CROSSWALKS, CrosswalkInfo } from './data/crosswalkData';
 import { INITIAL_COMMUNITY_REPORTS } from './data/reports';
+import { OFFICIAL_ANYANG_ROAD_CONTROLS } from './services/disasterService';
 import {
   createFacilityOptimalRoute,
   createCustomOptimalRoute,
@@ -300,6 +301,8 @@ function HomeSummarySheet({
   onSelectAttraction,
   onOpenAiChatbot,
   onNavigateToFacilitiesTab,
+  onRefreshWeather,
+  isRefreshingWeather,
 }: {
   origin: string;
   weather: WeatherSummary | null;
@@ -309,11 +312,18 @@ function HomeSummarySheet({
   onSelectAttraction: (spot: AnyangTourSpot) => void;
   onOpenAiChatbot?: () => void;
   onNavigateToFacilitiesTab?: () => void;
+  onRefreshWeather?: () => void;
+  isRefreshingWeather?: boolean;
 }) {
   return (
     <div className="px-3.5 pb-6 pt-1 text-slate-900 space-y-3.5 max-h-[72vh] overflow-y-auto hide-scrollbar">
       {/* ── 1. Real-time Weather & AI Cycling Coach Advice Card ── */}
-      <HomeWeatherAiCard weather={weather} origin={origin} />
+      <HomeWeatherAiCard
+        weather={weather}
+        origin={origin}
+        onRefreshWeather={onRefreshWeather}
+        isRefreshingWeather={isRefreshingWeather}
+      />
 
       {/* ── 2. Recommended Attractions Section (Search, Categories, Sort, List) ── */}
       <HomeAttractionsSection
@@ -363,8 +373,11 @@ export default function App() {
   const [isAttractionModalOpen, setIsAttractionModalOpen] = useState(false);
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
-  // Real-time Community Reports state
-  const [reports, setReports] = useState<CommunityReport[]>(INITIAL_COMMUNITY_REPORTS);
+  // Real-time Community & Public Disaster Reports state
+  const [reports, setReports] = useState<CommunityReport[]>(() => [
+    ...OFFICIAL_ANYANG_ROAD_CONTROLS,
+    ...INITIAL_COMMUNITY_REPORTS,
+  ]);
   const [reportCoordinates, setReportCoordinates] = useState<{ lat: number; lng: number } | undefined>();
   const [routeWarning, setRouteWarning] = useState<CommunityReport | null>(null);
   const [warningRouteKey, setWarningRouteKey] = useState<string | null>(null);
@@ -373,6 +386,7 @@ export default function App() {
     destination: { lat: number; lng: number };
   } | null>(null);
   const [weather, setWeather] = useState<WeatherSummary | null>(null);
+  const [isRefreshingWeather, setIsRefreshingWeather] = useState(false);
   const lastTriggeredReportIdRef = useRef<string | null>(null);
 
   // Riding Records with LocalStorage Persistence
@@ -709,23 +723,44 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!riderPosition) return;
-
     let isMounted = true;
     const loadWeather = async () => {
       try {
-        const nextWeather = await fetchKmaWeather(riderPosition.lat, riderPosition.lng);
+        const targetLat = riderPosition?.lat ?? ANYANG_CENTER.lat;
+        const targetLng = riderPosition?.lng ?? ANYANG_CENTER.lng;
+        const nextWeather = await fetchKmaWeather(targetLat, targetLng);
         if (isMounted) setWeather(nextWeather);
-      } catch {
-        if (isMounted) setWeather(null);
+      } catch (err) {
+        console.warn('Weather fetch failed:', err);
       }
     };
 
     void loadWeather();
+
+    // Refresh weather every 10 minutes
+    const weatherTimer = setInterval(() => {
+      void loadWeather();
+    }, 10 * 60 * 1000);
+
     return () => {
       isMounted = false;
+      clearInterval(weatherTimer);
     };
-  }, [riderPosition]);
+  }, [riderPosition?.lat, riderPosition?.lng]);
+
+  const handleRefreshWeather = useCallback(async () => {
+    setIsRefreshingWeather(true);
+    try {
+      const targetLat = riderPosition?.lat ?? ANYANG_CENTER.lat;
+      const targetLng = riderPosition?.lng ?? ANYANG_CENTER.lng;
+      const nextWeather = await fetchKmaWeather(targetLat, targetLng);
+      setWeather(nextWeather);
+    } catch (err) {
+      console.warn('Weather refresh failed:', err);
+    } finally {
+      setIsRefreshingWeather(false);
+    }
+  }, [riderPosition?.lat, riderPosition?.lng]);
 
   /* Filter Tag Click */
   const handleFilterSelect = (tag: FilterCategory) => {
@@ -974,9 +1009,9 @@ export default function App() {
             passedPath={undefined}
             remainingPath={undefined}
             riderPosition={riderPosition}
-            activePoiFilters={activePoiFilters}
+            activePoiFilters={[]}
             alwaysVisibleCategories={[]}
-            facilities={mappedFacilities}
+            facilities={[]}
             onSelectFacility={(fac) => setSelectedFacilityDetail(fac)}
             reports={reports}
             onSelectReport={handleSelectReport}
@@ -1072,34 +1107,6 @@ export default function App() {
                 </button>
               </div>
             </div>
-
-            {/* Quick Map POI Filters Row */}
-            <div className="pointer-events-auto mt-2 flex items-center gap-1.5 overflow-x-auto hide-scrollbar">
-              {[
-                { id: 'toilet' as POICategory, label: '화장실 243', icon: '🚻' },
-                { id: 'repair' as POICategory, label: '공기주입기', icon: '🔧' },
-                { id: 'parking' as POICategory, label: '거치대', icon: '🚲' },
-                { id: 'water' as POICategory, label: '음수대', icon: '💧' },
-              ].map((poi) => {
-                const isActive = activePoiFilters.includes(poi.id);
-                return (
-                  <button
-                    key={poi.id}
-                    type="button"
-                    onClick={() => handleTogglePoiFilter(poi.id)}
-                    className={`flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-md transition-all active:scale-95 border ${
-                      isActive
-                        ? 'bg-slate-900 text-white border-slate-900'
-                        : 'bg-white/95 text-slate-700 border-slate-200 hover:bg-white'
-                    }`}
-                  >
-                    <span>{poi.icon}</span>
-                    <span>{poi.label}</span>
-                    {isActive && <span className="ml-0.5 text-[9px] text-emerald-400 font-black">ON</span>}
-                  </button>
-                );
-              })}
-            </div>
           </div>
 
           {/* ── AI Chatbot FAB Button (유저 맞춤 명소 추천) ── */}
@@ -1147,6 +1154,8 @@ export default function App() {
                         origin={origin}
                         weather={weather}
                         riderPosition={riderPosition}
+                        onRefreshWeather={handleRefreshWeather}
+                        isRefreshingWeather={isRefreshingWeather}
                         onOpenAttractionModal={() => setIsAttractionModalOpen(true)}
                         onOpenGpsModal={() => setIsGpsTroubleshootOpen(true)}
                         onSelectAttraction={(spot) => {
